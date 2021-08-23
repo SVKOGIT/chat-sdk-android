@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -13,16 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:fitsSystemWindows="true"
-        app:theme="@style/AppBarLayout"
-        >
+        app:theme="@style/AppBarLayout">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
-            app:contentScrim="?colorPrimary"
             app:collapsedTitleGravity="center_vertical|start"
+            app:contentScrim="?colorPrimary"
             app:expandedTitleGravity="center_horizontal|top"
             app:expandedTitleMarginTop="12dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
@@ -41,8 +39,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
-                app:layout_collapseMode="pin"
-                >
+                app:layout_collapseMode="pin">
 
             </androidx.appcompat.widget.Toolbar>
 
@@ -56,10 +53,10 @@
                     android:id="@+id/titleTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="5dp"
                     android:layout_marginStart="5dp"
-                    android:textSize="20sp"
-                    android:gravity="center_vertical" />
+                    android:layout_marginLeft="5dp"
+                    android:gravity="center_vertical"
+                    android:textSize="20sp" />
 
             </RelativeLayout>
 
@@ -81,7 +78,7 @@
             <Space
                 android:id="@+id/topSpace"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"/>
+                android:layout_height="40dp" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/statusCardView"
@@ -105,21 +102,20 @@
                         android:id="@+id/statusTitleTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:theme="@style/CardHeader"
-                        android:text="@string/status"
                         android:paddingBottom="4dp"
-                        />
+                        android:text="@string/status"
+                        android:theme="@style/CardHeader" />
 
                     <EditText
                         android:id="@+id/statusEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:theme="@style/TextInput"
                         android:gravity="top"
                         android:inputType="textMultiLine|textCapSentences"
                         android:overScrollMode="always"
                         android:scrollbarStyle="insideInset"
-                        android:scrollbars="vertical" />
+                        android:scrollbars="vertical"
+                        android:theme="@style/TextInput" />
 
                 </LinearLayout>
 
@@ -136,7 +132,7 @@
                 <com.jaredrummler.materialspinner.MaterialSpinner
                     android:id="@+id/spinner"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
             </androidx.cardview.widget.CardView>
 
@@ -149,29 +145,29 @@
 
                 <LinearLayout
                     android:id="@+id/iconLinearLayout"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
                     <sdk.chat.ui.views.IconEditView
                         android:id="@+id/nameEditView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                     <sdk.chat.ui.views.IconEditView
                         android:id="@+id/locationEditView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                     <sdk.chat.ui.views.IconEditView
                         android:id="@+id/phoneEditView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                     <sdk.chat.ui.views.IconEditView
                         android:id="@+id/emailEditView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content" />
 
                 </LinearLayout>
 
@@ -184,8 +180,8 @@
         android:id="@+id/doneFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|end" />
 
@@ -193,25 +189,24 @@
         android:id="@+id/logoutFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         app:backgroundTint="?logoutButtonColor"
-        app:layout_anchor="@id/appbar"
         app:borderWidth="0dp"
         app:elevation="6dp"
+        app:layout_anchor="@id/appbar"
         app:layout_anchorGravity="bottom|start"
-        app:rippleColor="?logoutButtonColor"/>
+        app:rippleColor="?logoutButtonColor" />
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/avatarImageView"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            app:layout_anchor="@id/appbar"
-            app:layout_anchorGravity="center|bottom"
-            app:civ_border_width="5dp"
-            app:civ_circle_background_color="?avatarBackgroundColor"
-            app:civ_border_color="?avatarBorderColor"
-            />
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatarImageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:civ_border_color="?avatarBorderColor"
+        app:civ_border_width="5dp"
+        app:civ_circle_background_color="?avatarBackgroundColor"
+        app:layout_anchor="@id/appbar"
+        app:layout_anchorGravity="center|bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
