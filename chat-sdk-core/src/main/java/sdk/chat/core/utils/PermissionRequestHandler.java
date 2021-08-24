@@ -1,5 +1,7 @@
 package sdk.chat.core.utils;
 
+import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
+
 import android.Manifest;
 import android.app.Activity;
 
@@ -21,8 +23,6 @@ import io.reactivex.Completable;
 import sdk.chat.core.R;
 import sdk.chat.core.session.ChatSDK;
 import sdk.guru.common.RX;
-
-import static androidx.core.content.PermissionChecker.PERMISSION_DENIED;
 
 /**
  * Created by ben on 9/28/17.
@@ -68,7 +68,7 @@ public class PermissionRequestHandler {
     }
 
     public static Completable requestVideoAccess(Activity activity) {
-        return requestPermissions(activity, Manifest.permission.CAPTURE_VIDEO_OUTPUT);
+        return Completable.complete();
     }
 
     public static Completable requestReadContact(Activity activity) {
