@@ -51,19 +51,19 @@ dependencies {
         api project(':chat-sdk-mod-firebase-ui')
         api project(':chat-sdk-mod-profile-pictures')
 
-        api project(':chat-sdk-pro-message-audio')
-        api project(':chat-sdk-pro-message-sticker')
-        api project(':chat-sdk-pro-message-file')
-        api project(':chat-sdk-pro-message-video')
+        //api project(':chat-sdk-pro-message-audio')
+        //api project(':chat-sdk-pro-message-sticker')
+        //api project(':chat-sdk-pro-message-file')
+        //api project(':chat-sdk-pro-message-video')
 
-        api project(':chat-sdk-pro-contact-book')
+        //api project(':chat-sdk-pro-contact-book')
 
-        api project(':chat-sdk-pro-firebase-nearby-users')
-        api project(':chat-sdk-pro-firebase-blocking')
-        api project(':chat-sdk-pro-firebase-last-online')
-        api project(':chat-sdk-pro-firebase-typing-indicator')
-        api project(':chat-sdk-pro-firebase-read-receipts')
-        api project(':chat-sdk-mod-message-location')
+        //api project(':chat-sdk-pro-firebase-nearby-users')
+        //api project(':chat-sdk-pro-firebase-blocking')
+        //api project(':chat-sdk-pro-firebase-last-online')
+        //api project(':chat-sdk-pro-firebase-typing-indicator')
+        //api project(':chat-sdk-pro-firebase-read-receipts')
+        //api project(':chat-sdk-mod-message-location')
 
 //        api project(':chat-sdk-pro-encryption')
 
@@ -71,8 +71,8 @@ dependencies {
 //        api project(':chat-sdk-pro-firestream-typing-indicator')
 //        api project(':chat-sdk-pro-firestream-read-receipts')
 
-        api project(':chat-sdk-pro-xmpp-adapter')
-        api project(':chat-sdk-pro-xmpp-read-receipts')
+        //api project(':chat-sdk-pro-xmpp-adapter')
+        //api project(':chat-sdk-pro-xmpp-read-receipts')
 
     } else {
         api "sdk.chat:firebase-app:$CHAT_SDK_DEMO_VERSION"

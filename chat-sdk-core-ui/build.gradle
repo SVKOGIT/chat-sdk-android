@@ -46,8 +46,8 @@ android {
 rootProject.allprojects {
     repositories {
         maven { url "https://jitpack.io" }
-        maven { url "http://dl.bintray.com/chat-sdk/chatkit" }
-        maven { url "http://dl.bintray.com/chat-sdk/matisse"}
+        maven { url "https://dl.bintray.com/chat-sdk/chatkit" }
+        maven { url "https://dl.bintray.com/chat-sdk/matisse"}
         maven { url "https://dl.bintray.com/manneohlund/maven" }
     }
 //    configurations {

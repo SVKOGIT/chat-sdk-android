@@ -49,7 +49,7 @@ rootProject.allprojects {
         google()
         jcenter()
         maven { url "https://jitpack.io" }
-        maven { url "http://dl.bintray.com/chat-sdk/dexter" }
+        maven { url "https://dl.bintray.com/chat-sdk/dexter" }
         maven { url "https://dl.bintray.com/mikepenz/maven" }
     }
 }
