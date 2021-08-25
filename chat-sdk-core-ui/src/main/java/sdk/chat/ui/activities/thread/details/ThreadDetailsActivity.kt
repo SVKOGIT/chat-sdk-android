@@ -7,17 +7,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_thread_details.*
-import kotlinx.android.synthetic.main.fragment_profile.appbar
-import kotlinx.android.synthetic.main.fragment_profile.avatarImageView
-import kotlinx.android.synthetic.main.fragment_profile.headerImageView
-import kotlinx.android.synthetic.main.fragment_profile.onlineIndicator
 import sdk.chat.core.dao.Keys
 import sdk.chat.core.dao.Thread
 import sdk.chat.core.dao.User
@@ -60,6 +58,14 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
     open lateinit var editButton: ButtonViewModel
     open lateinit var joinButton: ButtonViewModel
 
+    private lateinit var appbar: AppBarLayout
+    private lateinit var avatarImageView: ImageView
+    private lateinit var onlineIndicator: ImageView
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var addUsersFab: FloatingActionButton
+    private lateinit var refreshFab: FloatingActionButton
+    private lateinit var headerImageView: ImageView
+
     open var items: MutableList<Any> = ArrayList()
 
     @LayoutRes
@@ -90,6 +96,14 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
 
     override fun initViews() {
         super.initViews()
+
+        appbar = findViewById(R.id.appbar)
+        avatarImageView = findViewById(R.id.avatarImageView)
+        onlineIndicator = findViewById(R.id.onlineIndicator)
+        recyclerView = findViewById(R.id.recyclerView)
+        addUsersFab = findViewById(R.id.addUsersFab)
+        refreshFab = findViewById(R.id.refreshFab)
+        headerImageView = findViewById(R.id.headerImageView)
 
         appbar.addOnOffsetChangedListener(ProfileViewOffsetChangeListener(avatarImageView))
         appbar.addOnOffsetChangedListener(ProfileViewOffsetChangeListener(onlineIndicator))

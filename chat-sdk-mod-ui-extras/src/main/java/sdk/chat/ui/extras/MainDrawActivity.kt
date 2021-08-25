@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.miguelcatalan.materialsearchview.MaterialSearchView
@@ -22,10 +23,10 @@ import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader
 import com.mikepenz.materialdrawer.util.DrawerImageLoader
 import com.mikepenz.materialdrawer.util.updateName
 import com.mikepenz.materialdrawer.widget.AccountHeaderView
+import com.mikepenz.materialdrawer.widget.MaterialDrawerSliderView
 import io.reactivex.Single
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_main_drawer.*
 import sdk.chat.core.events.EventType
 import sdk.chat.core.events.NetworkEvent
 import sdk.chat.core.hook.Executor
@@ -55,18 +56,33 @@ class MainDrawActivity : MainActivity() {
     private lateinit var privateThreadItem: PrimaryDrawerItem
     private lateinit var publicThreadItem: PrimaryDrawerItem
 
+    private lateinit var slider: MaterialDrawerSliderView
+    private lateinit var root: DrawerLayout
+    private var searchView: MaterialSearchView? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout)
 
+        slider = findViewById(R.id.slider)
+        root = findViewById(R.id.root)
+        searchView = findViewById(R.id.searchView)
+
         initViews()
 
-        dm.add(ChatSDK.events().sourceOnMain().filter(NetworkEvent.filterType(EventType.MessageReadReceiptUpdated, EventType.MessageAdded)).subscribe(Consumer {
-            // Refresh the read count
-            dm.add(privateTabName().subscribe(Consumer {
-                slider.updateName(privateThreadItem.identifier, it)
-            }))
-        }))
+        dm.add(
+            ChatSDK.events().sourceOnMain().filter(
+                NetworkEvent.filterType(
+                    EventType.MessageReadReceiptUpdated,
+                    EventType.MessageAdded
+                )
+            ).subscribe(Consumer {
+                // Refresh the read count
+                dm.add(privateTabName().subscribe(Consumer {
+                    slider.updateName(privateThreadItem.identifier, it)
+                }))
+            })
+        )
 
         // Update the user details
         dm.add(ChatSDK.events().sourceOnMain().filter(NetworkEvent.filterType(EventType.UserMetaUpdated)).filter(NetworkEvent.filterCurrentUser()).subscribe(Consumer {
@@ -279,7 +295,7 @@ class MainDrawActivity : MainActivity() {
     }
 
     override fun searchView(): MaterialSearchView {
-        return searchView
+        return requireNotNull(searchView)
     }
 
     override fun reloadData() {

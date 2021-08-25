@@ -2,8 +2,9 @@ package sdk.chat.ui.activities.thread.details
 
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.recycler_view_holder_thread_user.view.*
 import sdk.chat.core.defines.Availability
 import sdk.chat.core.interfaces.ThreadType
 import sdk.chat.core.session.ChatSDK
@@ -21,6 +22,11 @@ class ThreadUserViewHolder(parentView: ViewGroup) :
         with(itemView) {
             val user = item.user
             val thread = item.thread
+            val nameTextView = findViewById<TextView>(R.id.nameTextView)
+            val statusTextView = findViewById<TextView>(R.id.statusTextView)
+            val onlineIndicator = findViewById<View>(R.id.onlineIndicator)
+            val root = findViewById<View>(R.id.root)
+            val avatarImageView = findViewById<ImageView>(R.id.avatarImageView)
 
             nameTextView.text = user.name
             if (thread.typeIs(ThreadType.Group)) {
@@ -67,6 +73,7 @@ class ThreadUserViewHolder(parentView: ViewGroup) :
 
     fun setAvailability(availability: String?) {
         with(itemView) {
+            val availabilityImageView = findViewById<ImageView>(R.id.availabilityImageView)
             if (availability == null) {
                 availabilityImageView.visibility = View.INVISIBLE
             } else {

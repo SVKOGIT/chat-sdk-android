@@ -5,12 +5,10 @@ import android.os.Handler
 import android.os.Looper
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
-import kotlinx.android.synthetic.main.recycler_view_holder_navigation.view.*
-import kotlinx.android.synthetic.main.recycler_view_holder_radio.view.*
-import kotlinx.android.synthetic.main.recycler_view_holder_section.view.*
-import kotlinx.android.synthetic.main.recycler_view_holder_section.view.textView
-import kotlinx.android.synthetic.main.recycler_view_holder_toggle.view.*
+import android.widget.Checkable
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.appcompat.widget.SwitchCompat
 import sdk.chat.ui.R
 import sdk.chat.ui.icons.Icons
 import smartadapter.viewholder.SmartViewHolder
@@ -20,7 +18,7 @@ open class SmartViewModel() {
 
 }
 
-open class SectionViewModel(val title: String, val paddingTop: Int? = null): SmartViewModel() {
+open class SectionViewModel(val title: String, val paddingTop: Int? = null) : SmartViewModel() {
     var hideTopBorder = false
     var hideBottomBorder = false
 
@@ -40,7 +38,13 @@ interface RadioRunnable {
     fun run(value: String)
 }
 
-class RadioViewModel(val group: String, val title: String, val value: String, var starting: StartingValue, val onClick: RadioRunnable): SmartViewModel() {
+class RadioViewModel(
+    val group: String,
+    val title: String,
+    val value: String,
+    var starting: StartingValue,
+    val onClick: RadioRunnable
+) : SmartViewModel() {
     var delay: Long = 200
     var checked: Boolean = starting.get()
     open fun setDelay(delay: Long): RadioViewModel {
@@ -55,7 +59,7 @@ class RadioViewModel(val group: String, val title: String, val value: String, va
     }
 }
 
-class NavigationViewModel(val title: String, val onClick: Runnable): SmartViewModel() {
+class NavigationViewModel(val title: String, val onClick: Runnable) : SmartViewModel() {
     var delay: Long = 0
     var clicked = false
     open fun setDelay(delay: Long): NavigationViewModel {
@@ -72,13 +76,15 @@ class NavigationViewModel(val title: String, val onClick: Runnable): SmartViewMo
         }
     }
 }
-class DividerViewModel(): SmartViewModel()
+
+class DividerViewModel() : SmartViewModel()
 
 interface ButtonRunnable {
     fun run(value: Activity)
 }
 
-class ButtonViewModel(val title: String, val color: Int, val onClick: ButtonRunnable): SmartViewModel() {
+class ButtonViewModel(val title: String, val color: Int, val onClick: ButtonRunnable) :
+    SmartViewModel() {
     var delay: Long = 500
     open fun setDelay(delay: Long): ButtonViewModel {
         this.delay = delay
@@ -100,7 +106,8 @@ interface StartingValue {
     fun get(): Boolean
 }
 
-class ToggleViewModel(val title: String, var enabled: StartingValue, val onChange: ToggleRunnable): SmartViewModel() {
+class ToggleViewModel(val title: String, var enabled: StartingValue, val onChange: ToggleRunnable) :
+    SmartViewModel() {
     var delay: Long = 500
     open fun setDelay(delay: Long): ToggleViewModel {
         this.delay = delay
@@ -115,10 +122,12 @@ class ToggleViewModel(val title: String, var enabled: StartingValue, val onChang
 }
 
 open class RadioViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<RadioViewModel>(parentView, R.layout.recycler_view_holder_radio) {
+    SmartViewHolder<RadioViewModel>(parentView, R.layout.recycler_view_holder_radio) {
 
     override fun bind(item: RadioViewModel) {
         with(itemView) {
+            val textView: TextView = findViewById(R.id.textView)
+            val radioButton: Checkable = findViewById(R.id.radioButton)
             textView.text = item.title
             radioButton.isChecked = item.starting.get()
         }
@@ -126,14 +135,22 @@ open class RadioViewHolder(parentView: ViewGroup) :
 }
 
 open class SectionViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<SectionViewModel>(parentView, R.layout.recycler_view_holder_section) {
+    SmartViewHolder<SectionViewModel>(parentView, R.layout.recycler_view_holder_section) {
 
     override fun bind(item: SectionViewModel) {
         with(itemView) {
             if (item.paddingTop != null) {
-                itemView.setPadding(itemView.paddingLeft, item.paddingTop, itemView.paddingRight, itemView.paddingBottom)
+                itemView.setPadding(
+                    itemView.paddingLeft,
+                    item.paddingTop,
+                    itemView.paddingRight,
+                    itemView.paddingBottom
+                )
                 itemView.requestLayout();
             }
+            val textView: TextView = findViewById(R.id.textView)
+            val topBorder: View = findViewById(R.id.topBorder)
+            val bottomBorder: View = findViewById(R.id.bottomBorder)
             textView.text = item.title.toUpperCase(Locale.ROOT)
 
             if (item.hideTopBorder) {
@@ -152,11 +169,17 @@ open class SectionViewHolder(parentView: ViewGroup) :
 }
 
 open class NavigationViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<NavigationViewModel>(parentView, R.layout.recycler_view_holder_navigation) {
+    SmartViewHolder<NavigationViewModel>(parentView, R.layout.recycler_view_holder_navigation) {
 
     init {
         with(itemView) {
-            imageView.setImageDrawable(Icons.get(Icons.choose().arrowRight, R.color.gray_very_light))
+            val imageView = findViewById<ImageView>(R.id.imageView)
+            imageView.setImageDrawable(
+                Icons.get(
+                    Icons.choose().arrowRight,
+                    R.color.gray_very_light
+                )
+            )
         }
     }
 
@@ -166,16 +189,18 @@ open class NavigationViewHolder(parentView: ViewGroup) :
 
     override fun bind(item: NavigationViewModel) {
         with(itemView) {
+            val textView = findViewById<TextView>(R.id.textView)
             textView.text = item.title
         }
     }
 }
 
 open class ButtonViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<ButtonViewModel>(parentView, R.layout.recycler_view_holder_button) {
+    SmartViewHolder<ButtonViewModel>(parentView, R.layout.recycler_view_holder_button) {
 
     override fun bind(item: ButtonViewModel) {
         with(itemView) {
+            val textView = findViewById<TextView>(R.id.textView)
             textView.text = item.title
             textView.setTextColor(item.color)
         }
@@ -184,13 +209,13 @@ open class ButtonViewHolder(parentView: ViewGroup) :
 }
 
 open class DividerViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<DividerViewModel>(parentView, R.layout.recycler_view_holder_divider) {
+    SmartViewHolder<DividerViewModel>(parentView, R.layout.recycler_view_holder_divider) {
 
     override fun bind(item: DividerViewModel) {}
 }
 
 open class ToggleViewHolder(parentView: ViewGroup) :
-        SmartViewHolder<ToggleViewModel>(parentView, R.layout.recycler_view_holder_toggle) {
+    SmartViewHolder<ToggleViewModel>(parentView, R.layout.recycler_view_holder_toggle) {
 
     protected var model: ToggleViewModel? = null
 //    protected var checked = false
@@ -198,19 +223,22 @@ open class ToggleViewHolder(parentView: ViewGroup) :
     init {
         with(itemView) {
             itemView.isEnabled = false
-            switchMaterial.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, isChecked ->
+            val switchMaterial = findViewById<SwitchCompat>(R.id.switchMaterial)
+            switchMaterial.setOnCheckedChangeListener { _, isChecked ->
                 // Run after animation
                 model?.change(isChecked)
 
 //                if (isChecked != checked) {
 //                }
-            })
+            }
         }
     }
 
     override fun bind(item: ToggleViewModel) {
         with(itemView) {
             model = item
+            val textView = findViewById<TextView>(R.id.textView)
+            val switchMaterial = findViewById<SwitchCompat>(R.id.switchMaterial)
             textView.text = item.title
             switchMaterial.isChecked = item.enabled.get()
         }

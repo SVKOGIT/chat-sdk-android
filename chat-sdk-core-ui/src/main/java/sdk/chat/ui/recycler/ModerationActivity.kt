@@ -2,9 +2,9 @@ package sdk.chat.ui.recycler
 
 import android.app.Activity
 import android.os.Bundle
+import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
-import kotlinx.android.synthetic.main.activity_smart_recycler.*
 import org.pmw.tinylog.Logger
 import sdk.chat.core.dao.Keys
 import sdk.chat.core.dao.Thread
@@ -60,15 +60,17 @@ open class ModerationActivity: BaseActivity() {
             showProfile(user)
         }
 
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+
         smartRecyclerAdapter = SmartRecyclerAdapter
-                .items(items)
-                .map(SectionViewModel::class, SectionViewHolder::class)
-                .map(NavigationViewModel::class, NavigationViewHolder::class)
-                .map(RadioViewModel::class, RadioViewHolder::class)
-                .map(ButtonViewModel::class, ButtonViewHolder::class)
-                .map(DividerViewModel::class, DividerViewHolder::class)
-                .map(ToggleViewModel::class, ToggleViewHolder::class)
-                .add(OnClickEventListener {
+            .items(items)
+            .map(SectionViewModel::class, SectionViewHolder::class)
+            .map(NavigationViewModel::class, NavigationViewHolder::class)
+            .map(RadioViewModel::class, RadioViewHolder::class)
+            .map(ButtonViewModel::class, ButtonViewHolder::class)
+            .map(DividerViewModel::class, DividerViewHolder::class)
+            .map(ToggleViewModel::class, ToggleViewHolder::class)
+            .add(OnClickEventListener {
 
                     it.view.clearAnimation()
 

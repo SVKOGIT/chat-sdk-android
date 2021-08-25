@@ -120,6 +120,7 @@
                     android:ellipsize="end"
                     android:gravity="top"
                     android:maxLines="1"
+                    android:textColor="?colorOnSurface"
                     android:textSize="14sp"
                     tools:text="@tools:sample/lorem/random" />
 
