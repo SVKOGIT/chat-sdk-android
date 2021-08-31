@@ -52,7 +52,7 @@
         android:layout_width="12dp"
         android:layout_height="12dp"
         android:contentDescription="@string/online"
-        android:src="@drawable/shape_bubble_online"
+        android:background="@drawable/shape_bubble_online"
         app:layout_constraintEnd_toEndOf="@+id/messageUserAvatar"
         app:layout_constraintTop_toTopOf="@+id/messageUserAvatar" />
 
