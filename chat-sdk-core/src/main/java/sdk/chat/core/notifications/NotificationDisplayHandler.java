@@ -19,6 +19,7 @@ import android.os.PowerManager;
 import androidx.core.app.NotificationManagerCompat;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.Disposables;
 import io.reactivex.functions.Consumer;
 import sdk.chat.core.dao.Message;
 import sdk.chat.core.dao.Thread;
@@ -28,15 +29,16 @@ import sdk.chat.core.session.ChatSDK;
 public class NotificationDisplayHandler implements Consumer<Throwable> {
 
     public static final int MESSAGE_NOTIFICATION_ID = 1001;
+    public static final boolean bypass = true;
 
     public Disposable createMessageNotification(Message message) {
-
+        if (bypass) return Disposables.empty();
         final Context context = ChatSDK.ctx();
 
         if (connectedToAuto(context)) {
             return new NotificationBuilder(context).forMessageAuto(message).build().subscribe(builder -> {
-                        NotificationManagerCompat.from(context).notify(MESSAGE_NOTIFICATION_ID, builder.build());
-                    }, this);
+                NotificationManagerCompat.from(context).notify(MESSAGE_NOTIFICATION_ID, builder.build());
+            }, this);
         } else {
             return new NotificationBuilder(context).forMessage(message).build().subscribe(builder -> {
                 Notification notification = builder.build();
@@ -50,7 +52,7 @@ public class NotificationDisplayHandler implements Consumer<Throwable> {
     }
 
     public Disposable createMessageNotification(final Context context, Intent resultIntent, String userEntityID, String threadEntityId, String title, String message) {
-
+        if (bypass) return Disposables.empty();
         Thread thread = ChatSDK.db().fetchThreadWithEntityID(threadEntityId);
 
         // We are not connected... so we can't mark read or reply
@@ -87,14 +89,14 @@ public class NotificationDisplayHandler implements Consumer<Throwable> {
     }
 
 
-
     /**
      * Waking up the screen
-     * * * */
-    protected void wakeScreen(Context context){
+     * * *
+     */
+    protected void wakeScreen(Context context) {
 
         // Waking the screen so the user will see the notification
-        PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+        PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 
         boolean isScreenOn;
 
@@ -103,12 +105,11 @@ public class NotificationDisplayHandler implements Consumer<Throwable> {
         else
             isScreenOn = pm.isInteractive();
 
-        if(!isScreenOn)
-        {
+        if (!isScreenOn) {
 
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
-                    |PowerManager.ON_AFTER_RELEASE
-                    |PowerManager.ACQUIRE_CAUSES_WAKEUP, "chat-sdk:MyLock");
+                    | PowerManager.ON_AFTER_RELEASE
+                    | PowerManager.ACQUIRE_CAUSES_WAKEUP, "chat-sdk:MyLock");
 
             wl.acquire(5000);
             wl.release();

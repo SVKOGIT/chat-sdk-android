@@ -17,7 +17,6 @@ import io.reactivex.plugins.RxJavaPlugins;
 import sdk.chat.core.base.BaseNetworkAdapter;
 import sdk.chat.core.dao.DaoCore;
 import sdk.chat.core.dao.Message;
-import sdk.chat.core.dao.Thread;
 import sdk.chat.core.dao.User;
 import sdk.chat.core.handlers.AudioMessageHandler;
 import sdk.chat.core.handlers.AuthenticationHandler;
@@ -25,10 +24,10 @@ import sdk.chat.core.handlers.BlockingHandler;
 import sdk.chat.core.handlers.ContactHandler;
 import sdk.chat.core.handlers.ContactMessageHandler;
 import sdk.chat.core.handlers.CoreHandler;
-import sdk.chat.core.handlers.IEncryptionHandler;
 import sdk.chat.core.handlers.EventHandler;
 import sdk.chat.core.handlers.FileMessageHandler;
 import sdk.chat.core.handlers.HookHandler;
+import sdk.chat.core.handlers.IEncryptionHandler;
 import sdk.chat.core.handlers.ImageMessageHandler;
 import sdk.chat.core.handlers.LastOnlineHandler;
 import sdk.chat.core.handlers.LocationMessageHandler;
@@ -42,18 +41,13 @@ import sdk.chat.core.handlers.ThreadHandler;
 import sdk.chat.core.handlers.TypingIndicatorHandler;
 import sdk.chat.core.handlers.UploadHandler;
 import sdk.chat.core.handlers.VideoMessageHandler;
-import sdk.chat.core.hook.Hook;
-import sdk.chat.core.hook.HookEvent;
 import sdk.chat.core.interfaces.IKeyStorage;
 import sdk.chat.core.interfaces.InterfaceAdapter;
-import sdk.chat.core.interfaces.ThreadType;
 import sdk.chat.core.module.Module;
-import sdk.chat.core.notifications.NotificationDisplayHandler;
 import sdk.chat.core.storage.FileManager;
 import sdk.chat.core.utils.AppBackgroundMonitor;
 import sdk.chat.core.utils.KeyStorage;
 import sdk.chat.core.utils.StringChecker;
-import sdk.guru.common.RX;
 
 
 /**
@@ -227,7 +221,7 @@ public class ChatSDK {
         }
 
         // Local notifications
-        hook().addHook(Hook.sync(data -> {
+        /*hook().addHook(Hook.sync(data -> {
             Object messageObject = data.get(HookEvent.Message);
             Object threadObject = data.get(HookEvent.Thread);
             if (messageObject instanceof Message && threadObject instanceof Thread) {
@@ -246,7 +240,7 @@ public class ChatSDK {
                         }
                     }
                 }
-        }), HookEvent.MessageReceived);
+        }), HookEvent.MessageReceived);*/
 
         for (Runnable r: onActivateListeners) {
             r.run();
