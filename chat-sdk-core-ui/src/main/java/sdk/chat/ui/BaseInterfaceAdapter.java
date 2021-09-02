@@ -5,13 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.GlideBuilder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -116,9 +112,6 @@ public class BaseInterfaceAdapter implements InterfaceAdapter {
         Icons.shared().initialize(context);
 
         searchActivities.add(new SearchActivityType(searchActivity, context.getString(R.string.search_with_name)));
-
-        Glide.init(context, new GlideBuilder().setLogLevel(Log.ERROR));
-
     }
 
     @Override
