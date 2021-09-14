@@ -1,5 +1,6 @@
 package sdk.chat.ui.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -21,8 +22,11 @@ public interface IMessageHandler {
     boolean hasContentFor(MessageHolder holder);
 
     void onBindMessageHolders(Context context, MessageHolders holders);
+
     MessageHolder onNewMessageHolder(Message message);
-    boolean onClick(ChatActivity activity, View rootView, Message message);
+
+    boolean onClick(Activity activity, View rootView, Message message);
+
     boolean onLongClick(ChatActivity activity, View rootView, Message message);
 
 }

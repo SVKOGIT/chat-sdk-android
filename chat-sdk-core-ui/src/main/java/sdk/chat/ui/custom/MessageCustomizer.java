@@ -1,5 +1,6 @@
 package sdk.chat.ui.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -58,7 +59,7 @@ public class MessageCustomizer implements MessageHolders.ContentChecker<MessageH
         return null;
     }
 
-    public void onClick(ChatActivity activity, View rootView, Message message) {
+    public void onClick(Activity activity, View rootView, Message message) {
         IMessageHandler handler = handlerForMessage(message);
         if (handler != null) {
             handler.onClick(activity, rootView, message);

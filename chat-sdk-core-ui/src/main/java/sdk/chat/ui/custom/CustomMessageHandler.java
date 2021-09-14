@@ -1,5 +1,6 @@
 package sdk.chat.ui.custom;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 
@@ -34,7 +35,7 @@ public abstract class CustomMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public boolean onClick(ChatActivity activity, View rootView, Message message) {
+    public boolean onClick(Activity activity, View rootView, Message message) {
         if (message.getSender().isMe() && message.getMessageStatus() == MessageSendStatus.Failed) {
             DialogUtils.showToastDialog(activity, R.string.message_send_failed, R.string.try_to_resend_the_message, R.string.send, R.string.cancel, () -> {
                 MessageSendRig.create(message).run().subscribe(ChatSDK.events());
