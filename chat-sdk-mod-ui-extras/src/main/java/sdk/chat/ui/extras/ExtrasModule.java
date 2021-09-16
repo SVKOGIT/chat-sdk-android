@@ -1,6 +1,7 @@
 package sdk.chat.ui.extras;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
@@ -91,14 +92,14 @@ public class ExtrasModule extends AbstractModule {
     @Override
     public void activate(@Nullable Context context) {
         if (config.drawerEnabled) {
-            ChatSDK.ui().setMainActivity(MainDrawActivity.class);
+            ChatSDK.ui().setMainActivity(Activity.class);
         }
         if (config.qrCodesEnabled) {
-            ChatSDK.ui().addSearchActivity(ScanQRCodeActivity.class, ChatSDK.getString(sdk.chat.ui.extras.R.string.qr_code));
+            ChatSDK.ui().addSearchActivity(Activity.class, ChatSDK.getString(sdk.chat.ui.extras.R.string.qr_code));
 
             // Show the QR code when the user clicks the profile option
             ChatSDK.ui().addProfileOption(new ProfileOption(ChatSDK.getString(sdk.chat.ui.extras.R.string.qr_code), (activity, userEntityID) -> {
-                Intent intent = new Intent(activity, ShowQRCodeActivity.class);
+                Intent intent = new Intent(activity, Activity.class);
                 intent.putExtra(Keys.IntentKeyUserEntityID, userEntityID);
                 activity.startActivity(intent);
             }));

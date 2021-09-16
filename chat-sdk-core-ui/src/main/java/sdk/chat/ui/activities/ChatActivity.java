@@ -24,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 import com.stfalcon.chatkit.messages.MessageInput;
 
 import org.pmw.tinylog.Logger;
@@ -80,15 +79,23 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
 
     protected Thread thread;
 
-    @BindView(R2.id.chatActionBar) protected ChatActionBar chatActionBar;
-    @BindView(R2.id.chatView) protected ChatView chatView;
-    @BindView(R2.id.divider) protected View divider;
-    @BindView(R2.id.replyView) protected ReplyView replyView;
-    @BindView(R2.id.input) protected MessageInput input;
-    @BindView(R2.id.viewContainer) protected CoordinatorLayout viewContainer;
-    @BindView(R2.id.searchView) protected MaterialSearchView searchView;
-    @BindView(R2.id.root) protected FrameLayout root;
-    @BindView(R2.id.messageInputLinearLayout) protected LinearLayout messageInputLinearLayout;
+    @BindView(R2.id.chatActionBar)
+    protected ChatActionBar chatActionBar;
+    @BindView(R2.id.chatView)
+    protected ChatView chatView;
+    @BindView(R2.id.divider)
+    protected View divider;
+    @BindView(R2.id.replyView)
+    protected ReplyView replyView;
+    @BindView(R2.id.input)
+    protected MessageInput input;
+    @BindView(R2.id.viewContainer)
+    protected CoordinatorLayout viewContainer;
+    //@BindView(R2.id.searchView) protected MaterialSearchView searchView;
+    @BindView(R2.id.root)
+    protected FrameLayout root;
+    @BindView(R2.id.messageInputLinearLayout)
+    protected LinearLayout messageInputLinearLayout;
 
     protected AudioBinder audioBinder = null;
 
@@ -203,11 +210,11 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
 
         chatView.setDelegate(this);
 
-        chatActionBar.onSearchClicked(v -> {
+        /*chatActionBar.onSearchClicked(v -> {
             searchView.showSearch();
-        });
+        });*/
 
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+        /*searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 chatView.filter(query);
@@ -221,9 +228,9 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
                 chatActionBar.hideSearchIcon();
                 return false;
             }
-        });
+        });*/
 
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+        /*searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
 
@@ -234,7 +241,7 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
                 chatView.clearFilter();
                 chatActionBar.showSearchIcon();
             }
-        });
+        });*/
 
         chatView.initViews();
 
@@ -352,6 +359,7 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
             hideTextInput();
         }
     }
+
     /**
      * Send text text
      *
@@ -525,7 +533,7 @@ public class ChatActivity extends BaseActivity implements TextInputDelegate, Cha
 
                 // Check that the messages could be deleted
                 boolean canBeDeleted = true;
-                for (MessageHolder holder: chatView.getSelectedMessages()) {
+                for (MessageHolder holder : chatView.getSelectedMessages()) {
                     if (!ChatSDK.thread().canDeleteMessage(holder.getMessage())) {
                         canBeDeleted = false;
                     }

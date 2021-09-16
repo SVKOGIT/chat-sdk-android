@@ -7,6 +7,8 @@
 
 package sdk.chat.ui.activities;
 
+import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -25,7 +27,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import org.pmw.tinylog.Logger;
 
@@ -46,8 +47,6 @@ import sdk.chat.ui.adapters.UsersListAdapter;
 import sdk.chat.ui.icons.Icons;
 import sdk.guru.common.RX;
 
-import static android.widget.AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL;
-
 /**
  * Created by braunster on 29/06/14.
  */
@@ -56,18 +55,25 @@ public class SearchActivity extends BaseActivity {
     protected UsersListAdapter adapter;
     protected Disposable searchDisposable;
 
-    @BindView(R2.id.toolbar) protected Toolbar toolbar;
-    @BindView(R2.id.addUserButton) protected Button addUserButton;
-    @BindView(R2.id.recyclerView) protected RecyclerView recyclerView;
-    @BindView(R2.id.fab) protected FloatingActionButton fab;
-    @BindView(R2.id.searchView) protected MaterialSearchView searchView;
-    @BindView(R2.id.root) protected FrameLayout root;
-    @BindView(R2.id.progress) protected ProgressBar progressBar;
+    @BindView(R2.id.toolbar)
+    protected Toolbar toolbar;
+    @BindView(R2.id.addUserButton)
+    protected Button addUserButton;
+    @BindView(R2.id.recyclerView)
+    protected RecyclerView recyclerView;
+    @BindView(R2.id.fab)
+    protected FloatingActionButton fab;
+    //@BindView(R2.id.searchView) protected MaterialSearchView searchView;
+    @BindView(R2.id.root)
+    protected FrameLayout root;
+    @BindView(R2.id.progress)
+    protected ProgressBar progressBar;
 
     protected String text = "";
 
     @Override
-    protected @LayoutRes int getLayout() {
+    protected @LayoutRes
+    int getLayout() {
         return R.layout.activity_search;
     }
 
@@ -109,7 +115,7 @@ public class SearchActivity extends BaseActivity {
 
         dm.add(adapter.onToggleObserver().subscribe(userListItem -> refreshDoneButton()));
 
-        searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
+        /*searchView.setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (!query.isEmpty()) {
@@ -132,9 +138,9 @@ public class SearchActivity extends BaseActivity {
                 }
                 return false;
             }
-        });
+        });*/
 
-        searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
+        /*searchView.setOnSearchViewListener(new MaterialSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
 
@@ -144,7 +150,7 @@ public class SearchActivity extends BaseActivity {
             public void onSearchViewClosed() {
                 finish();
             }
-        });
+        });*/
 
         addUserButton.setOnClickListener(v -> {
             addUserButton.setEnabled(false);
@@ -181,7 +187,7 @@ public class SearchActivity extends BaseActivity {
         MenuItem item = menu.findItem(R.id.action_search);
         item.setIcon(Icons.get(this, Icons.choose().search, Icons.shared().actionBarIconColor));
 
-        searchView.setMenuItem(item);
+        //searchView.setMenuItem(item);
 
         return true;
     }
@@ -205,7 +211,7 @@ public class SearchActivity extends BaseActivity {
         super.onResume();
 
         refreshDoneButton();
-        searchView.showSearch(false);
+        //searchView.showSearch(false);
         addUserButton.setEnabled(true);
         fab.setEnabled(true);
 

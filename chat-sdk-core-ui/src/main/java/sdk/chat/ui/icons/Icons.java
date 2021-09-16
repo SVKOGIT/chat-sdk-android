@@ -10,7 +10,6 @@ import androidx.annotation.ColorRes;
 import androidx.core.content.ContextCompat;
 
 import com.mikepenz.iconics.IconicsDrawable;
-import com.mikepenz.iconics.typeface.library.fontawesome.FontAwesome;
 import com.mikepenz.iconics.typeface.library.googlematerial.GoogleMaterial;
 
 import sdk.chat.core.session.ChatSDK;
@@ -32,33 +31,33 @@ public class Icons {
     public void initialize(Context context) {
 
         // First icon doesn't load for some reason 🤷
-        dummy = new IconicsDrawable(context, FontAwesome.Icon.faw_dumbbell);
+        dummy = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
 
-        user = new IconicsDrawable(context, FontAwesome.Icon.faw_user);
+        user = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
         location = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_my_location);
-        phone = new IconicsDrawable(context, FontAwesome.Icon.faw_phone);
-        email = new IconicsDrawable(context, FontAwesome.Icon.faw_envelope);
-        chat = new IconicsDrawable(context, FontAwesome.Icon.faw_comment);
+        phone = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        email = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        chat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
         check = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_check);
-        save = new IconicsDrawable(context, FontAwesome.Icon.faw_download);
+        save = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
         block = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_block);
-        publicChat = new IconicsDrawable(context, FontAwesome.Icon.faw_users);
-        contact = new IconicsDrawable(context, FontAwesome.Icon.faw_address_book);
-        edit = new IconicsDrawable(context, FontAwesome.Icon.faw_user_edit);
-        logout = new IconicsDrawable(context, FontAwesome.Icon.faw_sign_out_alt);
+        publicChat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        contact = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        edit = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        logout = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
         search = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_search);
-        users = new IconicsDrawable(context, FontAwesome.Icon.faw_user_friends);
+        users = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_people);
         copy = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_content_copy);
         delete = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_delete);
         forward = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_forward);
         reply = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_reply);
         add = context.getResources().getDrawable(R.drawable.icn_18_plus);
-        microphone = new IconicsDrawable(context, FontAwesome.Icon.faw_microphone);
+        microphone = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_headset_mic);
         cancel = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_cancel);
         play = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_play_arrow);
         pause = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_pause);
         send = context.getResources().getDrawable(R.drawable.ic_send);
-        options = new IconicsDrawable(context, FontAwesome.Icon.faw_ellipsis_h);
+        options = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_more);
         refresh = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_sync);
         arrowRight = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_keyboard_arrow_right);
         user_100 = context.getResources().getDrawable(R.drawable.icn_100_user);

@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    id 'com.jfrog.bintray'
     id 'maven-publish'
     id 'org.greenrobot.greendao'
 //    id 'com.jakewharton.hugo'
@@ -44,19 +43,6 @@ greendao {
     daoPackage "sdk.chat.core.dao"
 }
 
-rootProject.allprojects {
-    repositories {
-        google()
-        jcenter()
-        maven { url "https://jitpack.io" }
-        //maven { url "https://dl.bintray.com/chat-sdk/dexter" }
-        //maven { url "https://dl.bintray.com/mikepenz/maven" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
-    }
-}
-
 dependencies {
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -73,7 +59,7 @@ dependencies {
     api "org.greenrobot:greendao:$greenDaoVersion"
 
 
-    implementation "id.zelory:compressor:$compressorVersion"
+    //implementation "id.zelory:compressor:$compressorVersion"
 
 
     implementation "com.karumi:dexter:$dexterVersion"

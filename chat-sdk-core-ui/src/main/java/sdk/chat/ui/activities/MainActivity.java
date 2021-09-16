@@ -15,8 +15,6 @@ import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
-
 import sdk.chat.core.dao.Keys;
 import sdk.chat.core.dao.Thread;
 import sdk.chat.core.interfaces.ThreadType;
@@ -46,7 +44,7 @@ public abstract class MainActivity extends BaseActivity {
 
     protected void initViews() {
         super.initViews();
-        if (searchView() != null) {
+        /*if (searchView() != null) {
             searchView().setOnQueryTextListener(new MaterialSearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
@@ -60,7 +58,7 @@ public abstract class MainActivity extends BaseActivity {
                     return false;
                 }
             });
-        }
+        }*/
         requestPermissions();
     }
 
@@ -69,10 +67,11 @@ public abstract class MainActivity extends BaseActivity {
     }
 
     protected abstract boolean searchEnabled();
-    protected abstract void search(String text);
-    protected abstract MaterialSearchView searchView();
 
-    public void launchFromPush (@Nullable Bundle bundle) {
+    protected abstract void search(String text);
+    //protected abstract MaterialSearchView searchView();
+
+    public void launchFromPush(@Nullable Bundle bundle) {
         if (bundle != null) {
             String threadID = bundle.getString(Keys.IntentKeyThreadEntityID);
             if (threadID != null && !threadID.isEmpty()) {
@@ -91,8 +90,11 @@ public abstract class MainActivity extends BaseActivity {
     }
 
     protected abstract void reloadData();
+
     protected abstract void clearData();
+
     protected abstract void updateLocalNotificationsForTab();
+
     protected abstract int getLayout();
 
     @Override
@@ -127,7 +129,7 @@ public abstract class MainActivity extends BaseActivity {
             getMenuInflater().inflate(R.menu.activity_search_menu, menu);
             MenuItem item = menu.findItem(R.id.action_search);
             item.setIcon(Icons.get(this, Icons.choose().search, Icons.shared().actionBarIconColor));
-            searchView().setMenuItem(item);
+            //searchView().setMenuItem(item);
         }
 
         return value;
@@ -147,7 +149,7 @@ public abstract class MainActivity extends BaseActivity {
 
     }
 
-    public boolean showLocalNotificationsForTab (Fragment fragment, Thread thread) {
+    public boolean showLocalNotificationsForTab(Fragment fragment, Thread thread) {
         // Don't show notifications on the threads tabs
         if (thread.typeIs(ThreadType.Private)) {
             Class privateThreadsFragmentClass = ChatSDK.ui().privateThreadsFragment().getClass();

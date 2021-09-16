@@ -1,9 +1,10 @@
 package sdk.chat.core.audio;
 
+import static com.google.android.exoplayer2.Player.STATE_READY;
+
 import android.content.Context;
 import android.net.Uri;
 
-import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -21,8 +22,6 @@ import io.reactivex.disposables.Disposable;
 import sdk.chat.core.session.ChatSDK;
 import sdk.chat.core.utils.CurrentLocale;
 import sdk.guru.common.RX;
-
-import static com.google.android.exoplayer2.Player.STATE_READY;
 
 /**
  * Created by ben on 9/28/17.
@@ -49,10 +48,6 @@ public class AudioPlayer {
                     isReady = true;
                 }
                 listener.onPlayerStateChanged(playWhenReady, playbackState);
-            }
-            @Override
-            public void onPlayerError(ExoPlaybackException error) {
-                Logger.debug("Playback error: " + error);
             }
         });
 

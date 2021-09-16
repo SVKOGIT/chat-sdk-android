@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 
 import java.io.File;
 
-import id.zelory.compressor.Compressor;
 import io.reactivex.Completable;
 import sdk.chat.core.R;
 import sdk.chat.core.dao.Keys;
@@ -32,17 +31,7 @@ public class BaseImageMessageHandler implements ImageMessageHandler {
             message.setValueForKey(image.getWidth(), Keys.MessageImageWidth);
             message.setValueForKey(image.getHeight(), Keys.MessageImageHeight);
 
-        }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> {
-            if (uploadable instanceof FileUploadable) {
-                FileUploadable fileUploadable = (FileUploadable) uploadable;
-                fileUploadable.file = new Compressor(ChatSDK.ctx())
-                        .setMaxHeight(ChatSDK.config().imageMaxHeight)
-                        .setMaxWidth(ChatSDK.config().imageMaxWidth)
-                        .compressToFile(fileUploadable.file);
-                return fileUploadable;
-            }
-            return uploadable;
-        }), (message, result) -> {
+        }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> uploadable), (message, result) -> {
             // When the file has uploaded, set the image URL
             message.setValueForKey(result.url, Keys.MessageImageURL);
 

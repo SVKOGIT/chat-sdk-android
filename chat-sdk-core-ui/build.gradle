@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    id 'com.jfrog.bintray'
     id 'maven-publish'
     id 'com.jakewharton.butterknife'
     id 'kotlin-android'
@@ -42,31 +41,16 @@ android {
     }
 }
 
-rootProject.allprojects {
-    repositories {
-        maven { url "https://jitpack.io" }
-        //maven { url "https://dl.bintray.com/chat-sdk/chatkit" }
-        //maven { url "https://dl.bintray.com/chat-sdk/matisse"}
-        //maven { url "https://dl.bintray.com/manneohlund/maven" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
-    }
-//    configurations {
-//        all*.exclude group: 'io.github.manneohlund'
-//    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api project(':chat-sdk-core')
 
     api "androidx.recyclerview:recyclerview:$androidxRecyclerViewVersion"
     implementation "org.ocpsoft.prettytime:prettytime:$rootProject.ext.prettyTimeVersion"
-    implementation "com.theartofdev.edmodo:android-image-cropper:$rootProject.ext.imageCropperVersion"
+    //implementation "com.theartofdev.edmodo:android-image-cropper:$rootProject.ext.imageCropperVersion"
     implementation "com.github.chrisbanes:PhotoView:$rootProject.ext.photoViewVersion"
 //    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
-    implementation "id.zelory:compressor:$compressorVersion"
+    //implementation "id.zelory:compressor:$compressorVersion"
 
     implementation "com.jakewharton.rxrelay2:rxrelay:$rxRelayVersion"
 
@@ -75,7 +59,7 @@ dependencies {
     api "com.google.android.material:material:$materialVersion"
 
     api "com.github.siyamed:android-shape-imageview:$shapeImageViewVersion"
-    api "co.chatsdk.chatsdk:chatkit:$chatKitVersion"
+    api "com.github.SVKOGIT:ChatKit:$chatKitVersion"
 
     api "com.mikepenz:google-material-typeface:$iconicsGoogleMaterialIconsVersion"
     api "com.mikepenz:fontawesome-typeface:$iconicsFontAwesomeTypefaceVersion"
@@ -85,19 +69,19 @@ dependencies {
 
     api "de.hdodenhof:circleimageview:$circleImageViewVersion"
 
-    implementation "co.chatsdk:matisse:$matisseVersion"
+    implementation "sdk.chat:matisse:$matisseVersion"
 
     implementation "com.jakewharton:butterknife:$butterKnifeVersion"
     annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
 
-    implementation "com.miguelcatalan:materialsearchview:$materialSearchVersion"
+    //implementation "com.miguelcatalan:materialsearchview:$materialSearchVersion"
 
     implementation "com.jaredrummler:material-spinner:$materialSpinnerVersion"
 
     implementation "net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:$keyboardVisibilityEventVersion"
 
     // Audio
-    implementation "com.github.adrielcafe:AndroidAudioRecorder:$androidAudioRecorderVersion"
+    //implementation "com.github.adrielcafe:AndroidAudioRecorder:$androidAudioRecorderVersion"
 
     api "com.github.bumptech.glide:glide:$glideVersion"
     annotationProcessor "com.github.bumptech.glide:compiler:$glideVersion"

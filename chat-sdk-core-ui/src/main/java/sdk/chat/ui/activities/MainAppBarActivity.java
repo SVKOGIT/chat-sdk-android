@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.util.List;
 
@@ -30,15 +29,21 @@ public class MainAppBarActivity extends MainActivity {
 
     protected PagerAdapterTabs adapter;
 
-    @BindView(R2.id.toolbar) protected Toolbar toolbar;
-    @BindView(R2.id.tabLayout) protected TabLayout tabLayout;
-    @BindView(R2.id.viewPager) protected ViewPager viewPager;
-    @BindView(R2.id.content) protected RelativeLayout content;
-    @BindView(R2.id.searchView) protected MaterialSearchView searchView;
-    @BindView(R2.id.root) protected FrameLayout root;
+    @BindView(R2.id.toolbar)
+    protected Toolbar toolbar;
+    @BindView(R2.id.tabLayout)
+    protected TabLayout tabLayout;
+    @BindView(R2.id.viewPager)
+    protected ViewPager viewPager;
+    @BindView(R2.id.content)
+    protected RelativeLayout content;
+    //@BindView(R2.id.searchView) protected MaterialSearchView searchView;
+    @BindView(R2.id.root)
+    protected FrameLayout root;
 
     @Override
-    protected @LayoutRes int getLayout() {
+    protected @LayoutRes
+    int getLayout() {
         return R.layout.activity_view_pager;
     }
 
@@ -62,10 +67,10 @@ public class MainAppBarActivity extends MainActivity {
         }
     }
 
-    @Override
+    /*@Override
     protected MaterialSearchView searchView() {
         return searchView;
-    }
+    }*/
 
     protected void initViews() {
         super.initViews();
@@ -148,7 +153,7 @@ public class MainAppBarActivity extends MainActivity {
             }
         }
 
-        searchView.closeSearch();
+        //searchView.closeSearch();
     }
 
     public Tab currentTab() {

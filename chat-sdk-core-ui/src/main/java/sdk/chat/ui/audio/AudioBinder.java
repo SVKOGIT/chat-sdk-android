@@ -1,5 +1,7 @@
 package sdk.chat.ui.audio;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -18,10 +20,6 @@ import org.pmw.tinylog.Logger;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
-import cafe.adriel.androidaudiorecorder.AndroidAudioRecorder;
-import cafe.adriel.androidaudiorecorder.model.AudioChannel;
-import cafe.adriel.androidaudiorecorder.model.AudioSampleRate;
-import cafe.adriel.androidaudiorecorder.model.AudioSource;
 import sdk.chat.core.session.ChatSDK;
 import sdk.chat.core.storage.FileManager;
 import sdk.chat.core.utils.ActivityResultPushSubjectHolder;
@@ -31,8 +29,6 @@ import sdk.chat.ui.icons.Icons;
 import sdk.chat.ui.interfaces.TextInputDelegate;
 import sdk.chat.ui.utils.ToastHelper;
 import sdk.guru.common.DisposableMap;
-
-import static android.app.Activity.RESULT_OK;
 
 public class AudioBinder {
 
@@ -90,7 +86,7 @@ public class AudioBinder {
                     }
                 }, AudioManager.MODE_NORMAL, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 
-                AndroidAudioRecorder.with(activity)
+                /*AndroidAudioRecorder.with(activity)
                         // Required
                         .setFilePath(audioFile.getPath())
                         .setColor(color)
@@ -103,7 +99,7 @@ public class AudioBinder {
                         .setKeepDisplayOn(true)
 
                         // Start recording
-                        .record();
+                        .record();*/
 
             } else {
                 delegate.sendMessage(String.valueOf(input));

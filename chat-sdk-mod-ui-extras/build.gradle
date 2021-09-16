@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.library'
-    id 'com.jfrog.bintray'
     id 'maven-publish'
     id 'kotlin-android'
     id 'kotlin-kapt'
@@ -52,12 +51,12 @@ dependencies {
     // Need this: maven { url "https://dl.bintray.com/mikepenz/maven" }
     api "com.mikepenz:materialdrawer-iconics:$materialDrawerVersion"
 
-    api "com.miguelcatalan:materialsearchview:$materialSearchVersion"
+    //api "com.miguelcatalan:materialsearchview:$materialSearchVersion"
 
     implementation "com.github.bumptech.glide:glide:$glideVersion"
     kapt "com.github.bumptech.glide:compiler:$glideVersion"
 
-    implementation "androidmads.library.qrgenearator:QRGenearator:$qrGenerator"
+    //implementation "androidmads.library.qrgenearator:QRGenearator:$qrGenerator"
     implementation "me.dm7.barcodescanner:zxing:$zxing"
 }
 

@@ -4,16 +4,15 @@ import org.gradle.internal.os.OperatingSystem
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:7.0.2'
         classpath "com.google.gms:google-services:4.3.10"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.30"
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
         classpath 'com.google.firebase:perf-plugin:1.4.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
         classpath "org.greenrobot:greendao-gradle-plugin:3.3.0"
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
     }
@@ -57,8 +56,8 @@ ext {
     imageCropperVersion = "2.8.0"
     photoViewVersion = "2.3.0"
     androidDatabaseSQLCipher = "4.3.0"
-    matisseVersion = "0.5.3-beta3b1"
-    chatKitVersion = "0.3.3b11"
+    matisseVersion = "0.5.3-beta3b2"
+    chatKitVersion = "0.4.1-rip1"
     shapeImageViewVersion = "0.9.+@aar"
     circleImageViewVersion = "3.1.0"
     dexterVersion = "6.0.2"
@@ -66,7 +65,7 @@ ext {
     butterKnifeVersion = "10.2.1"
 
     iconicsVersion = "5.0.0-a01"
-    materialDrawerVersion = "8.0.0-a07"
+    materialDrawerVersion = "8.4.3"
 
     iconicsGoogleMaterialIconsVersion = "3.0.1.4.original-kotlin@aar"
     iconicsFontAwesomeTypefaceVersion = "5.3.1.2-kotlin@aar"
@@ -75,12 +74,12 @@ ext {
     keyboardVisibilityEventVersion = "3.0.0-RC2"
     androidAudioRecorderVersion = "0.3.0"
     glideVersion = "4.11.0"
-    exoplayerVersion = "2.11.3"
+    exoplayerVersion = "2.15.0"
     androidAudioConverterVersion = "0.0.8"
     gsonVersion = "2.8.6"
 
     qrGenerator = "1.0.4"
-    zxing = "1.9.13"
+    zxing = "1.9.8"
 
     // Used by file messages
     androidNetworkingVersion = "1.0.2"
@@ -90,7 +89,7 @@ ext {
 //    smackVersion = "4.4.0"
     activity_ktx_version = "1.2.0"
 
-    kotlin_version = "1.3.72"
+    kotlin_version = "1.5.30"
 
 }
 
@@ -100,13 +99,12 @@ allprojects {
     }
     repositories {
         google()
-//        maven { url "https://jitpack.io" }
+        mavenCentral()
+        maven { url "https://jitpack.io" }
         //maven { url "https://dl.bintray.com/chat-sdk/chat-sdk-android" }
         maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
         maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
         maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
-
-        jcenter()
     }
 }
 
