@@ -37,13 +37,11 @@
     <!--this view is needed for custom holder-->
     <ImageView
         android:id="@+id/onlineIndicator"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_alignTop="@id/messageUserAvatar"
         android:layout_alignEnd="@id/messageUserAvatar"
-        android:layout_alignRight="@id/messageUserAvatar"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp" />
+        android:layout_alignRight="@id/messageUserAvatar" />
 
     <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
         android:id="@id/image"
