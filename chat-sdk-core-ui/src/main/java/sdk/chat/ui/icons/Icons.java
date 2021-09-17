@@ -31,19 +31,19 @@ public class Icons {
     public void initialize(Context context) {
 
         // First icon doesn't load for some reason 🤷
-        dummy = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        dummy = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_more);
 
-        user = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        user = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_person);
         location = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_my_location);
-        phone = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
-        email = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
-        chat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        phone = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_phone);
+        email = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_email);
+        chat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_message);
         check = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_check);
-        save = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        save = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_save);
         block = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_block);
-        publicChat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
-        contact = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
-        edit = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
+        publicChat = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_message);
+        contact = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_person);
+        edit = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_edit);
         logout = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_time_to_leave);
         search = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_search);
         users = new IconicsDrawable(context, GoogleMaterial.Icon.gmd_people);
