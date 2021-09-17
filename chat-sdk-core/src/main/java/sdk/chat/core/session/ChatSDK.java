@@ -215,6 +215,7 @@ public class ChatSDK {
         return a().audioMessage;
     }
 
+    @Nullable
     public static String currentUserID() {
         return auth().getCurrentUserEntityID();
     }

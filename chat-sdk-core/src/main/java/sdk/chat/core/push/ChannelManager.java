@@ -2,6 +2,8 @@ package sdk.chat.core.push;
 
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,18 +16,25 @@ public class ChannelManager {
 
     public static String PushChannelsKey = "PushChannelsKey";
 
-    public interface Executor {
-        void run(String channel);
-    }
-
-    public List<String> getChannelsForUser(String userEntityID) {
+    @NonNull
+    public List<String> getChannelsForUser(@NonNull String userEntityID) {
         SharedPreferences preferences = ChatSDK.shared().getPreferences();
         Set<String> channelSet = preferences.getStringSet(userKey(userEntityID), null);
         List<String> channels = new ArrayList<>();
         if (channelSet != null) {
-            channels.addAll(channelSet);
+            for (String channelId : channelSet) {
+                if (channelId == null) {
+                    continue;
+                }
+                channels.add(channelId);
+            }
         }
         return channels;
+    }
+
+    @NonNull
+    public String userKey(@NonNull String userEntityID) {
+        return PushChannelsKey + userEntityID;
     }
 
     public void setChannelsForUser(String userEntityID, List<String> channels) {
@@ -33,8 +42,16 @@ public class ChannelManager {
         editor.putStringSet(userKey(userEntityID), new HashSet<>(channels)).apply();
     }
 
-    public String userKey(String userEntityID) {
-        return PushChannelsKey + userEntityID;
+    public List<String> getUserEntityIDs() {
+        SharedPreferences preferences = ChatSDK.shared().getPreferences();
+        Map<String, ?> all = preferences.getAll();
+        List<String> userIDs = new ArrayList<>();
+        for (String key : all.keySet()) {
+            if (key.contains(PushChannelsKey)) {
+                userIDs.add(key.replace(PushChannelsKey, ""));
+            }
+        }
+        return userIDs;
     }
 
     public void addChannel(String channel) {
@@ -57,34 +74,27 @@ public class ChannelManager {
         setChannelsForUser(userEntityID, channels);
     }
 
-    public List<String> getUserEntityIDs() {
-        SharedPreferences preferences = ChatSDK.shared().getPreferences();
-        Map<String, ?> all = preferences.getAll();
-        List<String> userIDs = new ArrayList<>();
-        for (String key: all.keySet()) {
-            if (key.contains(PushChannelsKey)) {
-                userIDs.add(key.replace(PushChannelsKey, ""));
-            }
-        }
-        return userIDs;
-    }
-
     public void channelsForUsersExcludingCurrent(Executor executor) {
-        for (String entityID: getUserEntityIDs()) {
+        for (String entityID : getUserEntityIDs()) {
             if (!entityID.equals(ChatSDK.currentUserID())) {
-                for (String channel: getChannelsForUser(entityID)) {
+                for (@NonNull String channel : getChannelsForUser(entityID)) {
                     executor.run(channel);
                 }
             }
         }
     }
 
-    public boolean isSubscribed(String userEntityID, String channel) {
+    public boolean isSubscribed(@NonNull String userEntityID, @NonNull String channel) {
         return getChannelsForUser(userEntityID).contains(channel);
     }
 
-    public boolean isSubscribed(String channel) {
-        return isSubscribed(ChatSDK.currentUserID(), channel);
+    public boolean isSubscribed(@NonNull String channel) {
+        String userId = ChatSDK.currentUserID();
+        return userId != null && isSubscribed(userId, channel);
+    }
+
+    public interface Executor {
+        void run(@NonNull String channel);
     }
 
 }

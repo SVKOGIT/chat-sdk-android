@@ -1,5 +1,7 @@
 package sdk.chat.core.push;
 
+import androidx.annotation.NonNull;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,8 +40,9 @@ public abstract class AbstractPushHandler implements PushHandler {
 
             List<Completable> completables = new ArrayList<>();
 
-            if (!channelManager.isSubscribed(ChatSDK.currentUserID())) {
-                completables.add(subscribeToPushChannel(ChatSDK.currentUserID()));
+            String userId = ChatSDK.currentUserID();
+            if (userId != null && !channelManager.isSubscribed(userId)) {
+                completables.add(subscribeToPushChannel(userId));
             }
 
 //            for (Thread t: ChatSDK.db().allThreads()) {
@@ -91,19 +94,19 @@ public abstract class AbstractPushHandler implements PushHandler {
         }
 
         HashMap<String, String> users = new HashMap<>();
-        for(User user : message.getThread().getUsers()) {
+        for (User user : message.getThread().getUsers()) {
 
             String userName = user.getName();
             String userEntityID = user.getPushChannel();
 
             if (!user.isMe() && !StringChecker.isNullOrEmpty(userEntityID) && !StringChecker.isNullOrEmpty(userName)) {
-                if(!user.getIsOnline() || !ChatSDK.config().onlySendPushToOfflineUsers) {
+                if (!user.getIsOnline() || !ChatSDK.config().onlySendPushToOfflineUsers) {
                     users.put(userEntityID, userName);
                 }
             }
         }
 
-        if(users.keySet().size() == 0) {
+        if (users.keySet().size() == 0) {
             return null;
         }
 
@@ -116,7 +119,7 @@ public abstract class AbstractPushHandler implements PushHandler {
         data.put(SenderId, message.getSender().getEntityID());
         data.put(ThreadId, message.getThread().getEntityID());
         data.put(Action, ChatSDK.config().pushNotificationAction != null ? ChatSDK.config().pushNotificationAction : QuickReplyNotificationCategory);
-        if(!StringChecker.isNullOrEmpty(ChatSDK.config().pushNotificationSound)) {
+        if (!StringChecker.isNullOrEmpty(ChatSDK.config().pushNotificationSound)) {
             data.put(Sound, ChatSDK.config().pushNotificationSound);
         }
 
@@ -128,7 +131,7 @@ public abstract class AbstractPushHandler implements PushHandler {
     }
 
     @Override
-    public Completable subscribeToPushChannel(String channel) {
+    public Completable subscribeToPushChannel(@NonNull String channel) {
         return Completable.create(emitter -> {
             channelManager.addChannel(channel);
             emitter.onComplete();
@@ -143,7 +146,8 @@ public abstract class AbstractPushHandler implements PushHandler {
         });
     }
 
-    public String md5(String channel) throws NoSuchAlgorithmException {
+    @NonNull
+    public String md5(@NonNull String channel) throws NoSuchAlgorithmException {
         java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
         byte[] array = md.digest(channel.getBytes());
         StringBuilder sb = new StringBuilder();
@@ -153,7 +157,8 @@ public abstract class AbstractPushHandler implements PushHandler {
         return sb.toString();
     }
 
-    public String hashChannel(String channel) throws Exception {
+    @NonNull
+    public String hashChannel(@NonNull String channel) throws Exception {
         return md5(channel);
     }
 

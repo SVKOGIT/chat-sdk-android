@@ -1,5 +1,7 @@
 package sdk.chat.core.handlers;
 
+import androidx.annotation.Nullable;
+
 import io.reactivex.Completable;
 import sdk.chat.core.dao.User;
 import sdk.chat.core.types.AccountDetails;
@@ -45,6 +47,7 @@ public interface AuthenticationHandler {
     /**
     * Get the current user's authentication id
     */
+    @Nullable
     String getCurrentUserEntityID();
     User currentUser();
 

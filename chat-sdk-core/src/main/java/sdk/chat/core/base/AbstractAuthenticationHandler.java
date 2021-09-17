@@ -1,5 +1,7 @@
 package sdk.chat.core.base;
 
+import androidx.annotation.Nullable;
+
 import io.reactivex.Completable;
 import sdk.chat.core.dao.DaoCore;
 import sdk.chat.core.dao.Keys;
@@ -54,6 +56,8 @@ public abstract class AbstractAuthenticationHandler implements AuthenticationHan
      * @return the save auth id saved in the preference manager.
      * The preference manager is initialized when the NetworkManager.Init(context) is called.
      */
+    @Nullable
+    @Override
     public String getCurrentUserEntityID() {
         if (currentUserID == null || !isAuthenticated()) {
             currentUserID = ChatSDK.shared().getKeyStorage().get(Keys.CurrentUserID);

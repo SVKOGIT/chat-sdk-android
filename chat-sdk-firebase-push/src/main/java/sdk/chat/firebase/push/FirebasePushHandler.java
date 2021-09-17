@@ -1,5 +1,7 @@
 package sdk.chat.firebase.push;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.Continuation;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,22 +30,19 @@ public class FirebasePushHandler extends AbstractPushHandler {
 
     protected boolean enabled = true;
 
-    public FirebasePushHandler () {
+    public FirebasePushHandler() {
 
         DatabaseReference connectedRef = FirebaseCoreHandler.database().getReference(".info/connected");
         ValueEventListener listener = connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (connected) {
-                    enabled = false;
-                } else {
-                    enabled = true;
-                }
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                Boolean boolObject = snapshot.getValue(Boolean.class);
+                boolean connected = boolObject != null && boolObject;
+                enabled = !connected;
             }
 
             @Override
-            public void onCancelled(DatabaseError error) {
+            public void onCancelled(@NonNull DatabaseError error) {
                 System.err.println("Listener was cancelled");
             }
         });
@@ -53,42 +52,7 @@ public class FirebasePushHandler extends AbstractPushHandler {
     // Rather than subscribing for one user topic, subscribe to each thread as a new topic
     // Then we can mute notifications by just unsubscribing making the push script easier!
 
-    @Override
-    public Completable subscribeToPushChannel(final String channel) {
-        return Completable.defer(() -> {
-            String hash = hashChannel(channel);
-            return Completable.create(emitter -> messaging().subscribeToTopic(hash).addOnSuccessListener(aVoid -> {
-                emitter.onComplete();
-            }).addOnFailureListener(emitter::onError)).andThen(super.subscribeToPushChannel(hash)).subscribeOn(RX.io());
-        });
-    }
-
-    @Override
-    public Completable unsubscribeToPushChannel(String channel) {
-        return Completable.defer(() -> {
-            String hash = hashChannel(channel);
-            return Completable.create(emitter -> messaging().unsubscribeFromTopic(hash).addOnSuccessListener(aVoid -> {
-                emitter.onComplete();
-            }).addOnFailureListener(emitter::onError)).andThen(super.unsubscribeToPushChannel(hash)).subscribeOn(RX.io());
-        });
-    }
-
-    @Override
-    public void sendPushNotification(Map<String, Object> data) {
-        if (data != null) {
-            functions().getHttpsCallable("pushToChannels").call(data).continueWith((Continuation<HttpsCallableResult, String>) task -> {
-                if(task.getException() != null) {
-                    Logger.error(task.getException());
-                }
-                else {
-                    Logger.debug(task.getResult().getData().toString());
-                }
-                return null;
-            });
-        }
-    }
-
-    public static FirebaseFunctions functions () {
+    public static FirebaseFunctions functions() {
         if (FirebasePushModule.config().firebaseFunctionsRegion != null) {
             return FirebaseFunctions.getInstance(FirebaseCoreHandler.app(), FirebasePushModule.config().firebaseFunctionsRegion);
         } else {
@@ -96,8 +60,51 @@ public class FirebasePushHandler extends AbstractPushHandler {
         }
     }
 
-    public static FirebaseMessaging messaging () {
+    public static FirebaseMessaging messaging() {
         return FirebaseMessaging.getInstance();
+    }
+
+    @Override
+    public Completable subscribeToPushChannel(@NonNull final String channel) {
+        return Completable.defer(() -> {
+            String hash = hashChannel(channel);
+            return Completable.create(emitter -> messaging()
+                    .subscribeToTopic(hash)
+                    .addOnSuccessListener(aVoid -> emitter.onComplete())
+                    .addOnFailureListener(emitter::onError))
+                    .andThen(super.subscribeToPushChannel(hash))
+                    .subscribeOn(RX.io());
+        });
+    }
+
+    @Override
+    public Completable unsubscribeToPushChannel(@NonNull String channel) {
+        return Completable.defer(() -> {
+            String hash = hashChannel(channel);
+            return Completable.create(emitter -> messaging()
+                    .unsubscribeFromTopic(hash)
+                    .addOnSuccessListener(aVoid -> emitter.onComplete())
+                    .addOnFailureListener(emitter::onError))
+                    .andThen(super.unsubscribeToPushChannel(hash))
+                    .subscribeOn(RX.io());
+        });
+    }
+
+    @Override
+    public void sendPushNotification(Map<String, Object> data) {
+        if (data != null) {
+            functions()
+                    .getHttpsCallable("pushToChannels")
+                    .call(data)
+                    .continueWith((Continuation<HttpsCallableResult, String>) task -> {
+                        if (task.getException() != null) {
+                            Logger.error(task.getException());
+                        } else {
+                            Logger.debug(task.getResult().getData().toString());
+                        }
+                        return null;
+                    });
+        }
     }
 
     public boolean enabled() {
