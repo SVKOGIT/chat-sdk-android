@@ -435,10 +435,7 @@ public class ChatSDK {
     }
 
     public void stop() {
-        Context localContext = context.get();
-        if (localContext != null) {
-            localContext.deleteDatabase("andorid-chatsdk-database");
-        }
+        DaoCore.drop();
 
         context = null;
         config = new Config<>(this);
