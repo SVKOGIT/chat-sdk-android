@@ -98,6 +98,36 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return createThread(name, users, ThreadType.PrivateGroup, entityID, imageURL, meta);
     }
 
+    private static List<Thread> distinctThreads(List<Thread> threads) {
+        List<Thread> output = new ArrayList<>();
+        for (Thread thread : threads) {
+            if (containsSimilarThread(output, thread)) {
+                continue;
+            }
+            output.add(thread);
+        }
+        return output;
+    }
+
+    public Message newMessage(MessageType type, Thread thread) {
+        return newMessage(type.ordinal(), thread);
+    }
+
+    private static boolean containsSimilarThread(List<Thread> list, Thread thread) {
+        for (Thread savedThread : list) {
+            if (savedThread == thread || savedThread.equalsEntity(thread) || savedThread.getId().equals(thread.getId())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public Completable forwardMessages(Thread thread, Message... messages) {
+        return forwardMessages(thread, Arrays.asList(messages));
+    }
+
     public Message newMessage(int type, Thread thread) {
         Message message = ChatSDK.db().createEntity(Message.class);
         message.setSender(ChatSDK.currentUser());
@@ -107,7 +137,7 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         message.setMessageStatus(MessageSendStatus.None, false);
 
         if (!thread.typeIs(ThreadType.Public)) {
-            for (User user: thread.getUsers()) {
+            for (User user : thread.getUsers()) {
                 if (user.isMe()) {
                     message.setUserReadStatus(user, ReadStatus.read(), new Date(), false);
                 } else {
@@ -123,12 +153,8 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return message;
     }
 
-    public Message newMessage(MessageType type, Thread thread) {
-        return newMessage(type.ordinal(), thread);
-    }
-
     /**
-    /* Convenience method to save the text to the database then pass it to the token network adapter
+     * /* Convenience method to save the text to the database then pass it to the token network adapter
      * send method so it can be sent via the network
      */
     @Override
@@ -137,40 +163,6 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
             Message newMessage = newMessage(message.getType(), thread);
             newMessage.setMetaValues(message.getMetaValuesAsMap());
             return new MessageSendRig(newMessage, thread).run();
-        }).subscribeOn(RX.db());
-    }
-
-    @Override
-    public Completable forwardMessages(Thread thread, Message... messages) {
-        return forwardMessages(thread, Arrays.asList(messages));
-    }
-
-    @Override
-    public Completable forwardMessages(Thread thread, List<Message> messages) {
-        ArrayList<Completable> completables = new ArrayList<>();
-        for (Message message: messages) {
-            completables.add(forwardMessage(thread, message));
-        }
-        return Completable.concat(completables);
-    }
-
-    @Override
-    public Single<Integer> getUnreadMessagesAmount(boolean onePerThread){
-        return Single.create((SingleOnSubscribe<Integer>) emitter -> {
-            List<Thread> threads = getThreads(ThreadType.Private, false);
-
-            int count = 0;
-            for (Thread t : threads) {
-                if (onePerThread) {
-                    if(!t.isLastMessageWasRead()) {
-                        count++;
-                    }
-                }
-                else {
-                    count += t.getUnreadMessagesCount();
-                }
-            }
-            emitter.onSuccess(count);
         }).subscribeOn(RX.db());
     }
 
@@ -209,14 +201,14 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
     }
 
     @Override
-    public boolean canRemoveUsersFromThread(Thread thread, List<User> users) {
-        for (User user: users) {
-            if (!canRemoveUserFromThread(thread, user)) {
-                return false;
-            }
+    public Completable forwardMessages(Thread thread, List<Message> messages) {
+        ArrayList<Completable> completables = new ArrayList<>();
+        for (Message message : messages) {
+            completables.add(forwardMessage(thread, message));
         }
-        return true;
+        return Completable.concat(completables);
     }
+
     @Override
     public List<Thread> getThreads(int type) {
         return getThreads(type, false);
@@ -227,34 +219,23 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return getThreads(type, allowDeleted, ChatSDK.config().showEmptyChats);
     }
 
-    public List<Thread> getThreads(int type, boolean allowDeleted, boolean showEmpty){
+    @Override
+    public Single<Integer> getUnreadMessagesAmount(boolean onePerThread) {
+        return Single.create((SingleOnSubscribe<Integer>) emitter -> {
+            List<Thread> threads = getThreads(ThreadType.Private, false);
 
-        // We may access this method post authentication
-        if(ChatSDK.currentUser() == null) {
-            return new ArrayList<>();
-        }
-
-        List<Thread> threads;
-
-        if(ThreadType.isPublic(type)) {
-            threads =  ChatSDK.db().fetchThreadsWithType(ThreadType.PublicGroup);
-        } else {
-            threads = ChatSDK.db().fetchThreadsForCurrentUser();
-        }
-
-        List<Thread> filteredThreads = new ArrayList<>();
-        for(Thread thread : threads) {
-            if(thread.typeIs(type) && (!thread.getDeleted() || allowDeleted)) {
-                if (showEmpty || thread.getMessages().size() > 0) {
-                    filteredThreads.add(thread);
+            int count = 0;
+            for (Thread t : threads) {
+                if (onePerThread) {
+                    if (!t.isLastMessageWasRead()) {
+                        count++;
+                    }
+                } else {
+                    count += t.getUnreadMessagesCount();
                 }
             }
-        }
-
-        // Sort the threads list before returning
-//        Collections.sort(filteredThreads, new ThreadsSorter());
-
-        return filteredThreads;
+            emitter.onSuccess(count);
+        }).subscribeOn(RX.db());
     }
 
     @Override
@@ -271,21 +252,13 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
     }
 
     @Override
-    public Completable deleteThread(Thread thread) {
-        return Completable.create(emitter -> {
-            for (Message m: thread.getMessages()) {
-                thread.removeMessage(m);
-                m.cascadeDelete();
+    public boolean canRemoveUsersFromThread(Thread thread, List<User> users) {
+        for (User user : users) {
+            if (!canRemoveUserFromThread(thread, user)) {
+                return false;
             }
-            thread.setLoadMessagesFrom(new Date());
-            thread.setDeleted(true);
-            emitter.onComplete();
-
-//            return thread.deleteThread().doOnComplete(() -> {
-//                eventSource.onNext(NetworkEvent.threadRemoved(thread.getModel()));
-//            });
-
-        }).subscribeOn(RX.db());
+        }
+        return true;
     }
 
     @Override
@@ -298,13 +271,34 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return message.getSender().isMe();
     }
 
-    @Override
-    public Completable deleteMessages(List<Message> messages) {
-        ArrayList<Completable> completables = new ArrayList<>();
-        for (Message message: messages) {
-            completables.add(deleteMessage(message));
+    public List<Thread> getThreads(int type, boolean allowDeleted, boolean showEmpty) {
+
+        // We may access this method post authentication
+        if (ChatSDK.currentUser() == null) {
+            return new ArrayList<>();
         }
-        return Completable.merge(completables);
+
+        List<Thread> threads;
+
+        if (ThreadType.isPublic(type)) {
+            threads = ChatSDK.db().fetchThreadsWithType(ThreadType.PublicGroup);
+        } else {
+            threads = ChatSDK.db().fetchThreadsForCurrentUser();
+        }
+
+        List<Thread> filteredThreads = new ArrayList<>();
+        for (Thread thread : threads) {
+            if (thread.typeIs(type) && (!thread.getDeleted() || allowDeleted)) {
+                if (showEmpty || thread.getMessages().size() > 0) {
+                    filteredThreads.add(thread);
+                }
+            }
+        }
+
+        // Sort the threads list before returning
+//        Collections.sort(filteredThreads, new ThreadsSorter());
+
+        return distinctThreads(filteredThreads);
     }
 
     @Override
@@ -426,12 +420,21 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
     }
 
     @Override
-    public List<String> localizeRoles(List<String> roles) {
-        List<String> localized = new ArrayList<>();
-        for (String role: roles) {
-            localized.add(localizeRole(role));
-        }
-        return localized;
+    public Completable deleteThread(Thread thread) {
+        return Completable.create(emitter -> {
+            for (Message m : thread.getMessages()) {
+                thread.removeMessage(m);
+                m.cascadeDelete();
+            }
+            thread.setLoadMessagesFrom(new Date());
+            thread.setDeleted(true);
+            emitter.onComplete();
+
+//            return thread.deleteThread().doOnComplete(() -> {
+//                eventSource.onNext(NetworkEvent.threadRemoved(thread.getModel()));
+//            });
+
+        }).subscribeOn(RX.db());
     }
 
     public boolean canLeaveThread(Thread thread) {
@@ -461,5 +464,25 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
     @Override
     public boolean isActive(Thread thread, User user) {
         return user.getIsOnline();
+    }
+
+    // ---
+
+    @Override
+    public Completable deleteMessages(List<Message> messages) {
+        ArrayList<Completable> completables = new ArrayList<>();
+        for (Message message : messages) {
+            completables.add(deleteMessage(message));
+        }
+        return Completable.merge(completables);
+    }
+
+    @Override
+    public List<String> localizeRoles(List<String> roles) {
+        List<String> localized = new ArrayList<>();
+        for (String role : roles) {
+            localized.add(localizeRole(role));
+        }
+        return localized;
     }
 }

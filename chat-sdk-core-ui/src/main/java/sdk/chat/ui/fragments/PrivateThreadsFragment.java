@@ -30,10 +30,11 @@ public class PrivateThreadsFragment extends ThreadsFragment {
         super.initViews();
     }
 
-    @Override public void addListeners() {
+    @Override
+    public void addListeners() {
         super.addListeners();
         dm.add(getOnLongClickObservable().subscribe(thread -> DialogUtils.showToastDialog(getContext(), 0, R.string.alert_delete_thread, R.string.delete,
-                R.string.cancel,  () -> {
+                R.string.cancel, () -> {
                     dm.add(ChatSDK.thread().deleteThread(thread)
                             .observeOn(RX.main())
                             .subscribe(() -> {
@@ -63,11 +64,10 @@ public class PrivateThreadsFragment extends ThreadsFragment {
                 return Single.just(filtered);
             }
         }).subscribeOn(RX.single());
-
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
+    public boolean onOptionsItemSelected(MenuItem item) {
 
         /* Cant use switch in the library*/
         int id = item.getItemId();
