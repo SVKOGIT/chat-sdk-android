@@ -95,14 +95,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1">
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@id/dialogLastMessageUserAvatar"
+                <FrameLayout
+                    android:id="@+id/dialogLastMessageUserAvatarWraper"
                     android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:visibility="gone"
-                    app:civ_circle_background_color="?avatarBackgroundColor"
-                    tools:src="@tools:sample/avatars"
-                    tools:visibility="visible" />
+                    android:layout_height="0dp">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@id/dialogLastMessageUserAvatar"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone"
+                        app:civ_circle_background_color="?avatarBackgroundColor"
+                        tools:src="@tools:sample/avatars"
+                        tools:visibility="visible" />
+
+                </FrameLayout>
 
                 <TextView
                     android:id="@id/dialogLastMessage"
@@ -113,8 +120,8 @@
                     android:layout_marginRight="16dp"
                     android:layout_toStartOf="@id/readStatus"
                     android:layout_toLeftOf="@id/readStatus"
-                    android:layout_toEndOf="@id/dialogLastMessageUserAvatar"
-                    android:layout_toRightOf="@id/dialogLastMessageUserAvatar"
+                    android:layout_toEndOf="@id/dialogLastMessageUserAvatarWraper"
+                    android:layout_toRightOf="@id/dialogLastMessageUserAvatarWraper"
                     android:ellipsize="end"
                     android:gravity="top"
                     android:maxLines="1"
