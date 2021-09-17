@@ -2,6 +2,7 @@ package sdk.chat.core.push;
 
 import androidx.annotation.NonNull;
 
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,7 +61,10 @@ public abstract class AbstractPushHandler implements PushHandler {
                 ArrayList<Completable> completables = new ArrayList<>();
 
                 // Unsubscribe the user
-                completables.add(unsubscribeToPushChannel(ChatSDK.currentUserID()));
+                String userId = ChatSDK.currentUserID();
+                if (userId != null) {
+                    completables.add(unsubscribeToPushChannel(userId));
+                }
 
                 // Unsubscribe from the threads
 //                for (Thread t: ChatSDK.db().allThreads()) {
@@ -139,7 +143,7 @@ public abstract class AbstractPushHandler implements PushHandler {
     }
 
     @Override
-    public Completable unsubscribeToPushChannel(String channel) {
+    public Completable unsubscribeToPushChannel(@NonNull String channel) {
         return Completable.create(emitter -> {
             channelManager.removeChannel(channel);
             emitter.onComplete();
@@ -148,7 +152,7 @@ public abstract class AbstractPushHandler implements PushHandler {
 
     @NonNull
     public String md5(@NonNull String channel) throws NoSuchAlgorithmException {
-        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+        MessageDigest md = MessageDigest.getInstance("MD5");
         byte[] array = md.digest(channel.getBytes());
         StringBuilder sb = new StringBuilder();
         for (byte b : array) {
