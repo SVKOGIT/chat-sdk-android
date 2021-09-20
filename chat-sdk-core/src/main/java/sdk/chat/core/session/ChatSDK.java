@@ -435,8 +435,6 @@ public class ChatSDK {
     }
 
     public void stop() {
-        DaoCore.drop();
-
         context = null;
         config = new Config<>(this);
         if (networkAdapter != null) {
