@@ -19,6 +19,7 @@ import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import org.ocpsoft.prettytime.PrettyTime;
 import org.pmw.tinylog.Logger;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,6 +68,7 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
     protected DisposableMap dm = new DisposableMap();
 
     protected final PrettyTime prettyTime = new PrettyTime(CurrentLocale.get());
+    protected final DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
 
     protected Delegate delegate;
 
@@ -191,7 +193,7 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         });
 
         messagesListAdapter.setLoadMoreListener(this);
-        messagesListAdapter.setDateHeadersFormatter(date -> prettyTime.format(date));
+        messagesListAdapter.setDateHeadersFormatter(format::format);
 
         messagesListAdapter.setOnMessageClickListener(holder -> {
             Message message = holder.getMessage();
