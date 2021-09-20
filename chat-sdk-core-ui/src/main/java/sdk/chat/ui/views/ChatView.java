@@ -16,11 +16,11 @@ import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
 
-import org.ocpsoft.prettytime.PrettyTime;
 import org.pmw.tinylog.Logger;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +37,6 @@ import sdk.chat.core.session.ChatSDK;
 import sdk.chat.core.types.MessageSendProgress;
 import sdk.chat.core.types.MessageSendStatus;
 import sdk.chat.core.utils.AppBackgroundMonitor;
-import sdk.chat.core.utils.CurrentLocale;
 import sdk.chat.core.utils.Debug;
 import sdk.chat.core.utils.Dimen;
 import sdk.chat.ui.ChatSDKUI;
@@ -50,15 +49,11 @@ import sdk.guru.common.RX;
 
 public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoadMoreListener {
 
-    @BindView(R2.id.messagesList) protected MessagesList messagesList;
-    @BindView(R2.id.root) protected LinearLayout root;
+    protected final DateFormat formatTime = DateFormat.getTimeInstance(DateFormat.SHORT);
+    protected final DateFormat formatDate = DateFormat.getDateInstance(DateFormat.SHORT);
     protected boolean listenersAdded = false;
-
-    public interface Delegate {
-        Thread getThread();
-        void onClick(Message message);
-        void onLongClick(Message message);
-    }
+    @BindView(R2.id.messagesList)
+    protected MessagesList messagesList;
 
     protected MessagesListAdapter<MessageHolder> messagesListAdapter;
 
@@ -66,27 +61,8 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
     protected List<MessageHolder> messageHolders = new ArrayList<>();
 
     protected DisposableMap dm = new DisposableMap();
-
-    protected final PrettyTime prettyTime = new PrettyTime(CurrentLocale.get());
-    protected final DateFormat format = DateFormat.getTimeInstance(DateFormat.SHORT);
-
-    protected Delegate delegate;
-
-    public ChatView(Context context) {
-        super(context);
-    }
-
-    public ChatView(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
-    }
-
-    public ChatView(Context context, @Nullable AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
-    public void setDelegate(Delegate delegate) {
-        this.delegate = delegate;
-    }
+    @BindView(R2.id.root)
+    protected LinearLayout root;
 
     public void initViews() {
         LayoutInflater.from(getContext()).inflate(R.layout.view_chat, this);
@@ -193,7 +169,10 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         });
 
         messagesListAdapter.setLoadMoreListener(this);
-        messagesListAdapter.setDateHeadersFormatter(format::format);
+        messagesListAdapter.setDateHeadersFormatter(date -> {
+            DateFormat selectedFormatter = date.before(getDayStart()) ? formatDate : formatTime;
+            return selectedFormatter.format(date);
+        });
 
         messagesListAdapter.setOnMessageClickListener(holder -> {
             Message message = holder.getMessage();
@@ -221,6 +200,61 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
 
         onLoadMore(0, 0);
 
+    }
+
+    protected Delegate delegate;
+
+    public ChatView(Context context) {
+        super(context);
+    }
+
+    public ChatView(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public ChatView(Context context, @Nullable AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    public void setDelegate(Delegate delegate) {
+        this.delegate = delegate;
+    }
+
+    private Date getDayStart() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    public void addMessagesToEnd(final List<Message> messages) {
+        if (messages.isEmpty()) {
+            return;
+        }
+
+        // Check to see if the holders already exist
+        final List<MessageHolder> holders = new ArrayList<>();
+
+        RX.runSingle(() -> {
+            for (Message message : messages) {
+                MessageHolder holder = messageHolderHashMap.get(message);
+                if (holder == null) {
+                    holder = ChatSDKUI.shared().getMessageCustomizer().onNewMessageHolder(message);
+                    if (holder != null) {
+                        messageHolderHashMap.put(message, holder);
+                        holders.add(holder);
+                    } else {
+                        Logger.debug("Not allowed");
+                    }
+                }
+            }
+            Debug.messageList(messages);
+        }, () -> {
+            messageHolders.addAll(holders);
+            messagesListAdapter.addToEnd(holders, false);
+        }).subscribe(ChatSDK.events());
     }
 
     public void addListeners() {
@@ -419,32 +453,12 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         }
     }
 
-    public void addMessagesToEnd(final List<Message> messages) {
-        if (messages.isEmpty()) {
-            return;
-        }
+    public interface Delegate {
+        Thread getThread();
 
-        // Check to see if the holders already exist
-        final List<MessageHolder> holders = new ArrayList<>();
+        void onClick(Message message);
 
-        RX.runSingle(() -> {
-            for (Message message : messages) {
-                MessageHolder holder = messageHolderHashMap.get(message);
-                if (holder == null) {
-                    holder = ChatSDKUI.shared().getMessageCustomizer().onNewMessageHolder(message);
-                    if (holder != null) {
-                        messageHolderHashMap.put(message, holder);
-                        holders.add(holder);
-                    } else {
-                        Logger.debug("Not allowed");
-                    }
-                }
-            }
-            Debug.messageList(messages);
-        }, ()-> {
-            messageHolders.addAll(holders);
-            messagesListAdapter.addToEnd(holders, false);
-        }).subscribe(ChatSDK.events());
+        void onLongClick(Message message);
     }
 
     public void notifyDataSetChanged() {
