@@ -31,7 +31,10 @@ public class BaseImageMessageHandler implements ImageMessageHandler {
             message.setValueForKey(image.getWidth(), Keys.MessageImageWidth);
             message.setValueForKey(image.getHeight(), Keys.MessageImageHeight);
 
-        }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> uploadable), (message, result) -> {
+        }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> {
+            FileUploadable source = (FileUploadable) uploadable;
+            return new FileUploadable(BaseImageMessageHandlerExtKt.compressImage(source.file), uploadable.name, uploadable.mimeType, it -> it);
+        }), (message, result) -> {
             // When the file has uploaded, set the image URL
             message.setValueForKey(result.url, Keys.MessageImageURL);
 

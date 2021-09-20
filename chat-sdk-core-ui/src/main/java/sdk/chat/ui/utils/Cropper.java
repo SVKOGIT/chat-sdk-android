@@ -23,13 +23,10 @@ public class Cropper {
      * @return Intent that will open the crop context with an adjustable bounds for the cropping square.
      * * *
      */
-    public static void startActivity(Activity activity, Uri output) {
+    public static void startActivity(Activity activity) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            Intent photoIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                    .addCategory(Intent.CATEGORY_OPENABLE)
-                    .putExtra(Intent.EXTRA_LOCAL_ONLY, true)
-                    .putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-                    .putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*"});
+            Intent photoIntent = new Intent(Intent.ACTION_PICK)
+                    .setType("image/*");
             Intent chooserIntent = Intent.createChooser(photoIntent, "");
             activity.startActivityForResult(chooserIntent, Cropper.RequestCode);
         }
@@ -47,7 +44,7 @@ public class Cropper {
      * * *
      */
     public static void startSquareActivity(Activity activity, Uri output) {
-        startActivity(activity, output);
+        startActivity(activity);
         /*CropImage.activity(output)
                 .setAspectRatio(1,1)
                 .setInitialCropWindowPaddingRatio(0)
@@ -56,7 +53,7 @@ public class Cropper {
     }
 
     public static void startCircleActivity(Activity activity, Uri output) {
-        startActivity(activity, output);
+        startActivity(activity);
         /*CropImage.activity(output)
                 .setCropShape(CropImageView.CropShape.OVAL)
                 .setInitialCropWindowPaddingRatio(0)
