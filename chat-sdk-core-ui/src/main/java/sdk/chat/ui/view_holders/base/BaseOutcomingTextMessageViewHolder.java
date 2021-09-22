@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.text.util.LinkifyCompat;
 
 import com.stfalcon.chatkit.messages.MessageHolders;
 
@@ -22,16 +23,25 @@ import sdk.chat.ui.utils.DrawableUtil;
 public class BaseOutcomingTextMessageViewHolder<T extends MessageHolder>
         extends MessageHolders.OutcomingTextMessageViewHolder<T> {
 
-    @BindView(R2.id.messageIcon) @Nullable protected ImageView messageIcon;
-    @BindView(R2.id.readStatus) protected ImageView readStatus;
-    @BindView(R2.id.replyView) @Nullable protected View replyView;
-    @BindView(R2.id.replyImageView) @Nullable protected ImageView replyImageView;
-    @BindView(R2.id.replyTextView) @Nullable protected TextView replyTextView;
+    @BindView(R2.id.messageIcon)
+    @Nullable
+    protected ImageView messageIcon;
+    @BindView(R2.id.readStatus)
+    protected ImageView readStatus;
+    @BindView(R2.id.replyView)
+    @Nullable
+    protected View replyView;
+    @BindView(R2.id.replyImageView)
+    @Nullable
+    protected ImageView replyImageView;
+    @BindView(R2.id.replyTextView)
+    @Nullable
+    protected TextView replyTextView;
 
     public BaseOutcomingTextMessageViewHolder(View itemView, Object payload) {
         super(itemView, payload);
         bindButterKnife();
-   }
+    }
 
     public void bindButterKnife() {
         ButterKnife.bind(this, itemView);
@@ -47,8 +57,8 @@ public class BaseOutcomingTextMessageViewHolder<T extends MessageHolder>
         UIModule.shared().getIconBinder().bind(messageIcon, message, imageLoader);
         UIModule.shared().getTimeBinder().bind(time, message);
 
-        if(text != null) {
-            text.setAutoLinkMask(Linkify.ALL);
+        if (text != null) {
+            LinkifyCompat.addLinks(text, Linkify.ALL);
         }
 
         // Color state lists don't work for old versions of Android

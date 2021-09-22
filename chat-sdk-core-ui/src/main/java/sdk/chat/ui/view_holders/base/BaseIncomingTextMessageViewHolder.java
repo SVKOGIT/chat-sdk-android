@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.core.text.util.LinkifyCompat;
 
 import com.stfalcon.chatkit.messages.MessageHolders;
 
@@ -74,7 +75,7 @@ public class BaseIncomingTextMessageViewHolder<T extends MessageHolder>
         UIModule.shared().getIconBinder().bind(messageIcon, message, imageLoader);
 
         if(text != null) {
-            text.setAutoLinkMask(Linkify.ALL);
+            LinkifyCompat.addLinks(text, Linkify.ALL);
         }
 
         // Hide the time if it's the same as the next message
