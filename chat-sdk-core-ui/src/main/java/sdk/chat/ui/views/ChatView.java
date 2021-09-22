@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.bumptech.glide.Glide;
@@ -15,15 +16,18 @@ import com.bumptech.glide.RequestManager;
 import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.messages.MessagesListAdapter;
+import com.stfalcon.chatkit.utils.DateFormatter;
 
 import org.pmw.tinylog.Logger;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -169,10 +173,6 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         });
 
         messagesListAdapter.setLoadMoreListener(this);
-        messagesListAdapter.setDateHeadersFormatter(date -> {
-            DateFormat selectedFormatter = date.before(getDayStart()) ? formatDate : formatTime;
-            return selectedFormatter.format(date);
-        });
 
         messagesListAdapter.setOnMessageClickListener(holder -> {
             Message message = holder.getMessage();
@@ -216,20 +216,15 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         super(context, attrs, defStyle);
     }
 
+    public void setDateHeadersFormatter(@Nullable DateFormatter.Formatter formatter) {
+        messagesListAdapter.setDateHeadersFormatter(formatter);
+    }
+
     public void setDelegate(Delegate delegate) {
         this.delegate = delegate;
     }
 
-    private Date getDayStart() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
-    }
-
-    public void addMessagesToEnd(final List<Message> messages) {
+    public void addMessagesToEnd(@NonNull final List<Message> messages) {
         if (messages.isEmpty()) {
             return;
         }
@@ -371,7 +366,7 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         }
     }
 
-    public MessageHolder previous(Message message) {
+    public MessageHolder previous(@NonNull Message message) {
         Message previous = message.getPreviousMessage();
         if (previous != null) {
             return messageHolderHashMap.get(previous);
@@ -386,7 +381,7 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         }
     }
 
-    public MessageHolder next(Message message) {
+    public MessageHolder next(@NonNull Message message) {
         Message next = message.getNextMessage();
         if (next != null) {
             return messageHolderHashMap.get(next);
@@ -513,5 +508,58 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
     public void removeListeners() {
         dm.dispose();
         listenersAdded = false;
+    }
+
+    public static class CustomDateFormatter implements DateFormatter.Formatter {
+
+        private final DateFormat hourlyFormatter = DateFormat.getTimeInstance(DateFormat.SHORT);
+        private final DateFormat currentYearFormatter = new SimpleDateFormat("MMM dd", Locale.getDefault());
+        private final DateFormat yearlyFormatter = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+        private final String textYesterday;
+
+        public CustomDateFormatter(@NonNull String textYesterday) {
+            this.textYesterday = textYesterday;
+        }
+
+        @NonNull
+        @Override
+        public String format(@NonNull Date date) {
+            if (date.after(getDayStart())) { // is today
+                return hourlyFormatter.format(date);
+            } else if (date.after(getYesterdayStart())) { // is yesterday
+                return String.format("%s %s", textYesterday, hourlyFormatter.format(date));
+            } else if (date.after(getYearStart())) { // is this year
+                return String.format("%s, %s", currentYearFormatter.format(date), hourlyFormatter.format(date));
+            } else { // is last year or longer
+                return yearlyFormatter.format(date);
+            }
+        }
+
+        @NonNull
+        private Date getYearStart() {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(getDayStart());
+            calendar.set(Calendar.DAY_OF_YEAR, 1);
+            return calendar.getTime();
+        }
+
+        @NonNull
+        private Date getYesterdayStart() {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(getDayStart());
+            calendar.add(Calendar.DAY_OF_YEAR, -1);
+            return calendar.getTime();
+        }
+
+        @NonNull
+        private Date getDayStart() {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            return calendar.getTime();
+        }
+
     }
 }
