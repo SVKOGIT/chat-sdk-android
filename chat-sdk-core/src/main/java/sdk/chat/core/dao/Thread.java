@@ -462,22 +462,11 @@ public class Thread extends AbstractEntity {
         return data != null;
     }
 
-    public int getUnreadMessagesCount() {
-        return ChatSDK.db().fetchUnreadMessagesForThread(getId()).size();
-//
-//        int count = 0;
-//        List<Message> messages = getMessagesWithOrder(DaoCore.ORDER_DESC);
-//        for (Message m : messages)
-//        {
-//            if(!m.isRead())
-//                count++;
-//            else break;
-//        }
-//
-//        return count;
+    public long getUnreadMessagesCount() {
+        return ChatSDK.db().fetchUnreadMessagesCountForThread(getId());
     }
 
-    public boolean isLastMessageWasRead(){
+    public boolean isLastMessageWasRead() {
         List<Message> messages = getMessagesWithOrder(DaoCore.ORDER_DESC);
         return messages == null || messages.size() == 0 || messages.get(0).isRead();
     }

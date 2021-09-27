@@ -1,5 +1,9 @@
 package sdk.chat.core.session;
 
+import static sdk.chat.core.dao.DaoCore.daoSession;
+import static sdk.chat.core.dao.DaoCore.fetchEntityWithProperty;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.greenrobot.greendao.query.Join;
@@ -7,6 +11,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import org.pmw.tinylog.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +35,6 @@ import sdk.chat.core.types.ReadStatus;
 import sdk.guru.common.Optional;
 import sdk.guru.common.RX;
 
-import static sdk.chat.core.dao.DaoCore.daoSession;
-import static sdk.chat.core.dao.DaoCore.fetchEntityWithProperty;
-
 /**
  * Created by benjaminsmiley-andrews on 03/05/2017.
  */
@@ -53,8 +55,7 @@ public class StorageManager {
             Thread thread = link.getThread();
             if (thread != null) {
                 threads.add(thread);
-            }
-            else {
+            } else {
                 // Delete the link - it's obviously corrupted
                 link.delete();
             }
@@ -100,7 +101,7 @@ public class StorageManager {
         return fetchEntityWithEntityID(entityId, Message.class);
     }
 
-    public synchronized <T extends CoreEntity> T fetchOrCreateEntityWithEntityID(Class<T> c, String entityId){
+    public synchronized <T extends CoreEntity> T fetchOrCreateEntityWithEntityID(Class<T> c, String entityId) {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         if (entityCacheEnabled && entityCache.containsKey(c.toString() + entityId)) {
@@ -126,7 +127,7 @@ public class StorageManager {
         return Single.defer(() -> Single.just(fetchOrCreateEntityWithEntityID(c, entityId))).subscribeOn(RX.db());
     }
 
-    public synchronized <T> T createEntity (Class<T> c) {
+    public synchronized <T> T createEntity(Class<T> c) {
         Logger.debug(java.lang.Thread.currentThread().getName());
         T entity = DaoCore.getEntityForClass(c);
         DaoCore.createEntity(entity);
@@ -179,7 +180,7 @@ public class StorageManager {
         return qb.list();
     }
 
-    public synchronized Thread fetchOrCreateThreadWithEntityID(String entityId){
+    public synchronized Thread fetchOrCreateThreadWithEntityID(String entityId) {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         Thread thread = fetchThreadWithEntityID(entityId);
@@ -205,25 +206,41 @@ public class StorageManager {
     }
 
 
-
     public Single<List<Thread>> fetchThreadsWithTypeAsync(int type) {
         return Single.defer(() -> Single.just(fetchThreadsWithType(type)).subscribeOn(RX.db()));
     }
 
+    @NonNull
     public List<Message> fetchUnreadMessagesForThread(Long threadId) {
+        if (threadId == null) {
+            return Collections.emptyList();
+        }
+
+        return createUnreadMessagesQuery(threadId).list();
+    }
+
+    public long fetchUnreadMessagesCountForThread(Long threadId) {
+        if (threadId == null) {
+            return 0;
+        }
+
+        return createUnreadMessagesQuery(threadId).count();
+    }
+
+    @NonNull
+    private QueryBuilder<Message> createUnreadMessagesQuery(long threadId) {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         Long currentUserId = ChatSDK.currentUser().getId();
 
         QueryBuilder<Message> qb = daoSession.queryBuilder(Message.class);
-        Join<Message, ReadReceiptUserLink> join = qb.where(qb.and(MessageDao.Properties.ThreadId.eq(threadId), MessageDao.Properties.SenderId.notEq(currentUserId)))
+        Join<Message, ReadReceiptUserLink> join = qb
+                .where(qb.and(MessageDao.Properties.ThreadId.eq(threadId), MessageDao.Properties.SenderId.notEq(currentUserId)))
                 .join(ReadReceiptUserLink.class, ReadReceiptUserLinkDao.Properties.MessageId);
 
         join.where(join.and(ReadReceiptUserLinkDao.Properties.UserId.eq(currentUserId), ReadReceiptUserLinkDao.Properties.Status.notEq(ReadStatus.Read)));
 
-        List<Message> list = qb.list();
-
-        return list;
+        return qb;
     }
 
     public Single<List<Message>> fetchUnreadMessagesForThreadAsync(Long threadId) {
@@ -253,11 +270,11 @@ public class StorageManager {
 //        return qb.list().size();
 //    }
 
-    public Thread fetchThreadWithID (long threadID) {
+    public Thread fetchThreadWithID(long threadID) {
         return fetchEntityWithProperty(Thread.class, ThreadDao.Properties.Id, threadID);
     }
 
-    public Single<Thread> fetchThreadWithIDAsync (long threadID) {
+    public Single<Thread> fetchThreadWithIDAsync(long threadID) {
         return Single.defer(() -> Single.just(fetchThreadWithID(threadID)).subscribeOn(RX.db()));
     }
 
@@ -269,30 +286,30 @@ public class StorageManager {
 //        return null;
 //    }
 
-    public Single<Thread> fetchThreadWithEntityIDAsync (String entityID) {
+    public Single<Thread> fetchThreadWithEntityIDAsync(String entityID) {
         return Single.defer(() -> Single.just(fetchThreadWithEntityID(entityID)).subscribeOn(RX.db()));
     }
 
-    public Thread fetchThreadWithUsers (List<User> users) {
+    public Thread fetchThreadWithUsers(List<User> users) {
         Logger.debug(java.lang.Thread.currentThread().getName());
-        for(Thread t : allThreads()) {
-            if(t.getUsers().equals(users)) {
+        for (Thread t : allThreads()) {
+            if (t.getUsers().equals(users)) {
                 return t;
             }
         }
         return null;
     }
 
-    public Single<Thread> fetchThreadWithUsersAsync (List<User> users) {
+    public Single<Thread> fetchThreadWithUsersAsync(List<User> users) {
         return Single.defer(() -> Single.just(fetchThreadWithUsers(users)).subscribeOn(RX.db()));
     }
 
     public List<Thread> allThreads() {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
-        List<UserThreadLink> links =  DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.UserId, ChatSDK.currentUser().getId());
+        List<UserThreadLink> links = DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.UserId, ChatSDK.currentUser().getId());
         ArrayList<Thread> threads = new ArrayList<>();
-        for(UserThreadLink link : links) {
+        for (UserThreadLink link : links) {
             threads.add(link.getThread());
         }
 
@@ -304,7 +321,7 @@ public class StorageManager {
     }
 
 
-    public List<Message> fetchMessagesForThreadWithID (long threadID, @Nullable Date from, @Nullable Date to, int limit) {
+    public List<Message> fetchMessagesForThreadWithID(long threadID, @Nullable Date from, @Nullable Date to, int limit) {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         // If we have a zero date, treat it as null
@@ -322,10 +339,10 @@ public class StorageManager {
         qb.where(MessageDao.Properties.Date.isNotNull());
         qb.where(MessageDao.Properties.SenderId.isNotNull());
 
-        if(to != null) {
+        if (to != null) {
             qb.where(MessageDao.Properties.Date.lt(to.getTime()));
         }
-        if(from != null) {
+        if (from != null) {
             qb.where(MessageDao.Properties.Date.gt(from.getTime()));
         }
 
@@ -337,7 +354,7 @@ public class StorageManager {
 
         List<Message> list = qb.list();
 
-        return  list;
+        return list;
     }
 
     public List<Message> fetchMessagesWithFailedDecryption() {
@@ -380,7 +397,7 @@ public class StorageManager {
 
     public void deleteAllPublicKeys() {
         List<PublicKey> keys = DaoCore.fetchEntitiesOfClass(PublicKey.class);
-        for (PublicKey key: keys) {
+        for (PublicKey key : keys) {
             DaoCore.deleteEntity(key);
         }
     }
@@ -410,6 +427,7 @@ public class StorageManager {
     public void delete(Object entity) {
         DaoCore.deleteEntity(entity);
     }
+
     public Completable deleteAsync(Object entity) {
         return Completable.defer(() -> {
             delete(entity);

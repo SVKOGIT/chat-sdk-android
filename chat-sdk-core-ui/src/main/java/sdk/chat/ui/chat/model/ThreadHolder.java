@@ -50,7 +50,7 @@ public class ThreadHolder implements IDialog<MessageHolder> {
                 users.add(new UserHolder(user));
             }
         }
-        unreadCount = thread.getUnreadMessagesCount();
+        unreadCount = (int) thread.getUnreadMessagesCount();
         displayName = thread.getDisplayName();
     }
 
@@ -113,7 +113,7 @@ public class ThreadHolder implements IDialog<MessageHolder> {
     @Override
     public int getUnreadCount() {
         if (unreadCount == null) {
-            unreadCount = thread.getUnreadMessagesCount();
+            unreadCount = (int) thread.getUnreadMessagesCount();
         }
         return unreadCount;
     }
