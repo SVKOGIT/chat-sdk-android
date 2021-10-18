@@ -14,27 +14,49 @@ import kotlin.math.max
 @JvmOverloads
 fun compressImage(file: File, maxImageSize: Int = 600): File {
     val context = ChatSDK.ctx()
-    val exif = file.exif
-
-    val width = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-    val height = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+    val (width, height) = file.getImageExtras(maxImageSize)
 
     return runBlocking {
         Compressor.compress(context, file) {
             quality(80)
             format(Bitmap.CompressFormat.JPEG)
-
-            if (max(width, height) < maxImageSize || width == 0 || height == 0) {
-                return@compress
-            }
-
-            if (height > width) {
-                resolution(maxImageSize, maxImageSize / width * height)
-            } else {
-                resolution(maxImageSize / height * width, maxImageSize)
-            }
+            if (width != 0 && height != 0)
+                resolution(width, height)
         }
     }
+}
+
+data class ImageExtras(
+    val width: Int,
+    val height: Int
+)
+
+@JvmOverloads
+fun File.getImageExtras(maxImageSize: Int = 600): ImageExtras {
+    val exif = exif
+
+    val width = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+    val height = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+
+    val dstWidth: Int
+    val dstHeight: Int
+
+    when {
+        max(width, height) < maxImageSize -> {
+            dstWidth = width
+            dstHeight = height
+        }
+        height > width -> {
+            dstWidth = maxImageSize
+            dstHeight = maxImageSize / width * height
+        }
+        else -> {
+            dstWidth = maxImageSize / height * width
+            dstHeight = maxImageSize
+        }
+    }
+
+    return ImageExtras(dstWidth, dstHeight)
 }
 
 private val File.exif

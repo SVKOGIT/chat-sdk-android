@@ -1,8 +1,5 @@
 package sdk.chat.core.base;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import java.io.File;
 
 import io.reactivex.Completable;
@@ -25,15 +22,18 @@ public class BaseImageMessageHandler implements ImageMessageHandler {
     @Override
     public Completable sendMessageWithImage(final File imageFile, final Thread thread) {
         return new MessageSendRig(new MessageType(MessageType.Image), thread, message -> {
-            // Get the image and set the image text dimensions
-            final Bitmap image = BitmapFactory.decodeFile(imageFile.getPath(), null);
+            ImageExtras extras = BaseImageMessageHandlerExtKt.getImageExtras(imageFile);
 
-            message.setValueForKey(image.getWidth(), Keys.MessageImageWidth);
-            message.setValueForKey(image.getHeight(), Keys.MessageImageHeight);
+            message.setValueForKey(extras.getWidth(), Keys.MessageImageWidth);
+            message.setValueForKey(extras.getHeight(), Keys.MessageImageHeight);
+            message.setValueForKey("file://" + imageFile.getAbsolutePath(), Keys.MessageImageURL);
+            System.out.println(imageFile.getAbsolutePath());
 
         }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> {
             FileUploadable source = (FileUploadable) uploadable;
-            return new FileUploadable(BaseImageMessageHandlerExtKt.compressImage(source.file), uploadable.name, uploadable.mimeType, it -> it);
+            File file = BaseImageMessageHandlerExtKt.compressImage(source.file);
+
+            return new FileUploadable(file, uploadable.name, uploadable.mimeType, it -> it);
         }), (message, result) -> {
             // When the file has uploaded, set the image URL
             message.setValueForKey(result.url, Keys.MessageImageURL);

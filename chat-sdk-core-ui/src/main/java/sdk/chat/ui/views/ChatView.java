@@ -111,7 +111,6 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
                         .into(imageView);
             } else {
                 builder.load(url)
-                        .placeholder(ilp.placeholder)
                         .error(ilp.error)
                         .override(maxImageWidth(), maxImageWidth())
                         .centerCrop()
