@@ -2,7 +2,6 @@ package sdk.chat.ui.views;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.widget.LinearLayout;
@@ -76,7 +75,6 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
         ChatSDKUI.shared().getMessageCustomizer().onBindMessageHolders(getContext(), holders);
 
         messagesListAdapter = new MessagesListAdapter<>(ChatSDK.currentUserID(), holders, (imageView, url, payload) -> {
-
             ImageLoaderPayload ilp;
             if (payload instanceof ImageLoaderPayload) {
                 ilp = (ImageLoaderPayload) payload;
@@ -84,18 +82,11 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
                 ilp = new ImageLoaderPayload();
             }
 
-            if (ilp.width == 0) {
-                ilp.width = maxImageWidth();
-            }
-            if (ilp.height == 0) {
-                ilp.height = maxImageWidth();
-            }
             if (ilp.placeholder == 0) {
                 ilp.placeholder = R.drawable.icn_200_image_message_placeholder;
             }
             if (ilp.error == 0) {
                 ilp.error = R.drawable.icn_200_image_message_placeholder;
-//                ilp.error = R.drawable.icn_200_image_message_loading;
             }
 
             if (url == null) {
@@ -105,37 +96,12 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
 
             RequestManager request = Glide.with(this);
             RequestBuilder<?> builder;
+
             if (ilp.isAnimated) {
                 builder = request.asGif();
             } else {
                 builder = request.asDrawable().dontAnimate();
             }
-//
-//            if (payload == null) {
-//                // User avatar
-//                request.load(url)
-//                        .dontAnimate()
-//                        .placeholder(R.drawable.icn_100_profile)
-//                        .override(Dimen.from(getContext(), R.dimen.small_avatar_width), Dimen.from(getContext(), R.dimen.small_avatar_height))
-//                        .into(imageView);
-//            } else {
-//
-//                // Image message
-//                request.load(url)
-//                        .override(ilp.width, ilp.height)
-//                        .placeholder(ilp.placeholder)
-//                        .error(ilp.error)
-//                        .dontAnimate()
-//                        .override(maxImageWidth(), maxImageWidth())
-//                        .centerCrop()
-//                        .into(imageView);
-//            }
-
-//            Uri uri = Uri.parse(url);
-//            if (uri != null && uri.getScheme() != null && uri.getScheme().equals("android.resource")) {
-//                builder.load(uri).override(ilp.width, ilp.height).dontAnimate().into(imageView);
-//            } else {
-//            }
 
             if (payload == null) {
                 // User avatar
@@ -144,32 +110,13 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
                         .override(Dimen.from(getContext(), R.dimen.small_avatar_width), Dimen.from(getContext(), R.dimen.small_avatar_height))
                         .into(imageView);
             } else {
-
-                // If this is a local image
-                Uri uri = Uri.parse(url);
-                if (uri != null && uri.getScheme() != null && uri.getScheme().equals("android.resource")) {
-                    builder = builder.load(uri);
-                } else {
-                    builder = builder.load(url);
-                }
-
-                builder.override(ilp.width, ilp.height)
+                builder.load(url)
                         .placeholder(ilp.placeholder)
                         .error(ilp.error)
                         .override(maxImageWidth(), maxImageWidth())
                         .centerCrop()
                         .into(imageView);
             }
-            // If this is a local image
-//            Uri uri = Uri.parse(url);
-//            if (uri != null && uri.getScheme() != null && uri.getScheme().equals("android.resource")) {
-//                builder.load(uri)
-//                        .override(ilp.width, ilp.height)
-//                        .dontAnimate()
-//                        .into(imageView);
-//            } else {
-//
-//            }
         });
 
         messagesListAdapter.setLoadMoreListener(this);
