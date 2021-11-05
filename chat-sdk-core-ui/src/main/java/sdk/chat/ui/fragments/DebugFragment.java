@@ -30,7 +30,7 @@ public class DebugFragment extends BaseFragment {
     Button deleteThreadsButton;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@androidx.annotation.NonNull @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
         initViews();
         return view;

@@ -2,7 +2,12 @@ package sdk.chat.ui.fragments;
 
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+
+import org.pmw.tinylog.Logger;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -11,6 +16,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Predicate;
 import sdk.chat.core.dao.Thread;
 import sdk.chat.core.events.NetworkEvent;
+import sdk.chat.core.handlers.ThreadHandler;
 import sdk.chat.core.interfaces.ThreadType;
 import sdk.chat.core.session.ChatSDK;
 import sdk.chat.ui.R;
@@ -35,11 +41,14 @@ public class PrivateThreadsFragment extends ThreadsFragment {
         super.addListeners();
         dm.add(getOnLongClickObservable().subscribe(thread -> DialogUtils.showToastDialog(getContext(), 0, R.string.alert_delete_thread, R.string.delete,
                 R.string.cancel, () -> {
-                    dm.add(ChatSDK.thread().deleteThread(thread)
+                    ThreadHandler handler = ChatSDK.thread();
+                    if (handler == null) {
+                        Logger.error("ThreadHandler is null. Did you initialize ChatSDK?");
+                        return;
+                    }
+                    dm.add(handler.deleteThread(thread)
                             .observeOn(RX.main())
                             .subscribe(() -> {
-//                                clearData();
-//                                loadData();
                             }, throwable -> ToastHelper.show(getContext(), throwable.getLocalizedMessage())));
                 }, null)));
     }
@@ -47,8 +56,8 @@ public class PrivateThreadsFragment extends ThreadsFragment {
     @Override
     protected Single<List<Thread>> getThreads() {
         return Single.defer(() -> {
-
-            List<Thread> threads = ChatSDK.thread().getThreads(ThreadType.Private);
+            ThreadHandler handler = ChatSDK.thread();
+            List<Thread> threads = handler != null ? handler.getThreads(ThreadType.Private) : Collections.emptyList();
 
             if (ChatSDK.config().privateChatRoomLifetimeMinutes == 0) {
                 return Single.just(threads);
@@ -67,7 +76,7 @@ public class PrivateThreadsFragment extends ThreadsFragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         /* Cant use switch in the library*/
         int id = item.getItemId();

@@ -13,7 +13,7 @@ import kotlin.math.max
 
 @JvmOverloads
 fun compressImage(file: File, maxImageSize: Int = 600): File {
-    val context = ChatSDK.ctx()
+    val context = ChatSDK.ctx() ?: return file
     val (width, height) = file.getImageExtras(maxImageSize)
 
     return runBlocking {

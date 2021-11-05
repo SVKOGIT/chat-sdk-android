@@ -1,5 +1,6 @@
 package sdk.chat.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
@@ -36,7 +38,9 @@ import sdk.chat.core.dao.User;
 import sdk.chat.core.events.EventBatcher;
 import sdk.chat.core.events.EventType;
 import sdk.chat.core.events.NetworkEvent;
+import sdk.chat.core.handlers.EventHandler;
 import sdk.chat.core.session.ChatSDK;
+import sdk.chat.core.session.StorageManager;
 import sdk.chat.core.utils.Dimen;
 import sdk.chat.ui.R;
 import sdk.chat.ui.R2;
@@ -62,13 +66,16 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
     protected PublishRelay<Thread> onClickPublishRelay = PublishRelay.create();
     protected PublishRelay<Thread> onLongClickPublishRelay = PublishRelay.create();
 
-    @BindView(R2.id.dialogsList) protected DialogsList dialogsList;
-    @BindView(R2.id.root) protected RelativeLayout root;
+    @BindView(R2.id.dialogsList)
+    protected DialogsList dialogsList;
+    @BindView(R2.id.root)
+    protected RelativeLayout root;
 
 //    protected UpdateActionBatcher batcher = new UpdateActionBatcher(100);
 
     @Override
-    protected @LayoutRes int getLayout() {
+    protected @LayoutRes
+    int getLayout() {
         return R.layout.fragment_threads;
     }
 
@@ -91,7 +98,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
 
         initViews();
@@ -101,36 +108,13 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
     }
 
     public void addListeners() {
-
         removeListeners();
 
-//        this.batcher = new UpdateActionBatcher(100);
-
-        // We batch updates to the threads fragment because potentially it could be updated from a lot of places
-        // Thread meta, user meta, user presence, messages, read receipts
-        // So we batch and combine updates to make it more efficient
-//        dm.add(batcher.onUpdate().observeOn(RX.main()).subscribe(threadUpdateActions -> {
-//            for (ThreadUpdateAction action : threadUpdateActions) {
-//                if (action.type == ThreadUpdateAction.Type.Reload) {
-//                    reloadData();
-//                } else {
-//                    if (action.type == ThreadUpdateAction.Type.SoftReload) {
-//                        softReloadData();
-//                    }
-//                    if (action.type == ThreadUpdateAction.Type.Add) {
-//                        addOrUpdateThread(action.thread);
-//                    } else if (action.type == ThreadUpdateAction.Type.Remove) {
-//                        removeThread(action.thread);
-//                    } else if (action.type == ThreadUpdateAction.Type.Update) {
-//                        dialogsListAdapter.updateItemById(action.holder);
-//                    } else if (action.type == ThreadUpdateAction.Type.UpdateMessage) {
-//                        updateMessage(action.message);
-//                    }
-//                }
-//            }
-//        }, throwable -> {
-//            onError(throwable);
-//        }));
+        EventHandler events = ChatSDK.events();
+        if (events == null) {
+            Logger.error("EventHandler is null. Did you initialize ChatSDK?");
+            return;
+        }
 
         batcher = new EventBatcher(250, new EventBatcher.Listener() {
             @Override
@@ -148,13 +132,11 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
                         if (!inList) {
                             addOrUpdateThread(thread);
                         }
-                    }
-                    else if (networkEvent.typeIs(EventType.ThreadRemoved)) {
+                    } else if (networkEvent.typeIs(EventType.ThreadRemoved)) {
                         if (inList) {
                             removeThread(thread);
                         }
-                    }
-                    else if (networkEvent.typeIs(EventType.MessageAdded, EventType.MessageRemoved, EventType.MessageReadReceiptUpdated, EventType.ThreadMetaUpdated)) {
+                    } else if (networkEvent.typeIs(EventType.MessageAdded, EventType.MessageRemoved, EventType.MessageReadReceiptUpdated, EventType.ThreadMetaUpdated)) {
                         if (inList) {
                             dm.add(holder.updateAsync().observeOn(RX.main()).subscribe(() -> {
                                 dialogsListAdapter.updateItemById(holder);
@@ -163,8 +145,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
                                 }
                             }));
                         }
-                    }
-                    else if (networkEvent.typeIs(EventType.TypingStateUpdated)) {
+                    } else if (networkEvent.typeIs(EventType.TypingStateUpdated)) {
                         if (inList) {
                             if (networkEvent.getText() != null) {
                                 String typingText = networkEvent.getText();
@@ -174,8 +155,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
                                 dialogsListAdapter.updateItemById(holder);
                             }
                         }
-                    }
-                    else {
+                    } else {
                         if (inList) {
                             dialogsListAdapter.updateItemById(holder);
                         }
@@ -196,67 +176,18 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
             }
         });
 
-        dm.add(ChatSDK.events().sourceOnBackground()
+        dm.add(events.sourceOnBackground()
                 .filter(mainEventFilter())
                 .observeOn(RX.main())
                 .subscribe(networkEvent -> {
-
                     batcher.add(networkEvent, networkEvent.typeIs(EventType.TypingStateUpdated));
-
                     Logger.debug("Network Event: " + networkEvent.type);
-
-//                    final boolean inList = inList(thread);
-
-
-
-//                    // This stops a case where the thread details updated could be called before the thread is added
-//                    if (networkEvent.typeIs(EventType.ThreadAdded)) {
-//                        if (!inList) {
-//                            batcher.addAction(ThreadUpdateAction.add(thread));
-//                        }
-//                    } else if (networkEvent.typeIs(EventType.ThreadRemoved)) {
-//                        if (inList) {
-//                            batcher.addAction(ThreadUpdateAction.remove(thread));
-//                        }
-//                    }
-//                    else if (networkEvent.typeIs(EventType.ThreadMetaUpdated, EventType.ThreadUserAdded, EventType.ThreadUserRemoved, EventType.MessageReadReceiptUpdated)) {
-//                        if (inList) {
-//                            batcher.addAction(ThreadUpdateAction.add(thread));
-//                        }
-//                    }
-//                    else if (networkEvent.typeIs(EventType.TypingStateUpdated)) {
-//                        if (inList) {
-//                            if (networkEvent.getText() != null) {
-//                                String typingText = networkEvent.getText();
-//                                typingText += getString(R.string.typing);
-//                                batcher.addAction(ThreadUpdateAction.update(thread, new TypingThreadHolder(thread, typingText)));
-//                            } else {
-//                                getOrCreateThreadHolderAsync(thread).observeOn(RX.main()).doOnSuccess(holder -> {
-//                                    batcher.addAction(ThreadUpdateAction.update(thread, holder));
-//                                }).subscribe();
-//                            }
-//                        }
-//                    }
-//                    else if (networkEvent.typeIs(EventType.UserMetaUpdated, EventType.UserPresenceUpdated)) {
-//                        batcher.addSoftReload();
-//                    } else if (networkEvent.typeIs(EventType.MessageAdded, EventType.MessageRemoved, EventType.MessageReadReceiptUpdated)) {
-//                        final Message message = networkEvent.getMessage();
-//                        if (message != null) {
-//                            Message lastMessage = thread.lastMessage();
-//                            if (lastMessage == null || lastMessage.equals(message)) {
-//                                batcher.addAction(ThreadUpdateAction.updateMessage(message));
-//                            }
-//                        }
-//                    } else {
-//                        batcher.addReload();
-//                    }
                 }));
     }
 
     public void removeListeners() {
-        if(batcher != null) {
+        if (batcher != null) {
             batcher.dispose();
-//            batcher.dispose();
         }
         dm.dispose();
     }
@@ -283,9 +214,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
         });
 
         if (UIModule.config().messageTimeFormat != null) {
-            dialogsListAdapter.setDatesFormatter(date -> {
-                return DateFormatter.format(date, UIModule.config().messageTimeFormat);
-            });
+            dialogsListAdapter.setDatesFormatter(date -> DateFormatter.format(date, UIModule.config().messageTimeFormat));
         }
 
         dialogsList.setAdapter(dialogsListAdapter);
@@ -306,7 +235,12 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
             startChatActivity(dialog.getId());
         });
         dialogsListAdapter.setOnDialogLongClickListener(dialog -> {
-            Thread thread = ChatSDK.db().fetchThreadWithEntityID(dialog.getId());
+            StorageManager storage = ChatSDK.db();
+            if (storage == null) {
+                Logger.error("StorageManager is null, did you initialize ChatSDK?");
+                return;
+            }
+            Thread thread = storage.fetchThreadWithEntityID(dialog.getId());
             if (thread != null) {
                 onLongClickPublishRelay.accept(thread);
             }
@@ -324,7 +258,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.add_menu, menu);
         menu.findItem(R.id.action_add).setIcon(Icons.get(getContext(), Icons.choose().add, Icons.shared().actionBarIconColor));
@@ -335,7 +269,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
 
     // Override this in the subclass to handle the plus button
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         return super.onOptionsItemSelected(item);
     }
 
@@ -366,16 +300,16 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
 
     @Override
     public void reloadData() {
-//        if (reloadDataOnResume) {
-            loadData();
-//            reloadDataOnResume = false;
-//        }
+        loadData();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void softReloadData() {
-        if (dialogsListAdapter != null) {
-            dialogsListAdapter.notifyDataSetChanged();
+        RecyclerView.Adapter<?> adapter = dialogsListAdapter;
+        if (adapter == null) {
+            return;
         }
+        adapter.notifyDataSetChanged();
     }
 
     public void loadData() {
@@ -390,7 +324,7 @@ public abstract class ThreadsFragment extends BaseFragment implements SearchSupp
                 }
                 return threadHolders;
             }).observeOn(RX.main()).doOnSuccess(threadHolders -> {
-                if(dialogsListAdapter.getItemCount() != threadHolders.size()) {
+                if (dialogsListAdapter.getItemCount() != threadHolders.size()) {
                     dialogsListAdapter.clear();
                     dialogsListAdapter.setItems(threadHolders);
                 }

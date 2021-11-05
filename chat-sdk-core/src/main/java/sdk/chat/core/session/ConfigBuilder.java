@@ -1,7 +1,6 @@
 package sdk.chat.core.session;
 
 
-
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
@@ -9,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import sdk.chat.core.base.BaseNetworkAdapter;
-import sdk.chat.core.module.Module;
 import sdk.chat.core.interfaces.InterfaceAdapter;
+import sdk.chat.core.module.Module;
 import sdk.guru.common.BaseConfig;
 
 public class ConfigBuilder<T> extends BaseConfig<T> {
@@ -55,7 +54,7 @@ public class ConfigBuilder<T> extends BaseConfig<T> {
         return this;
     }
 
-    public Config config() {
+    public Config<ConfigBuilder<T>> config() {
         return config;
     }
 

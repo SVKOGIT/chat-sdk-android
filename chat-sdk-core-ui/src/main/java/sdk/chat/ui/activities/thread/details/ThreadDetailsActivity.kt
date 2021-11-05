@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jakewharton.rxrelay2.PublishRelay
-import io.reactivex.functions.Action
 import io.reactivex.functions.Consumer
 import sdk.chat.core.dao.Keys
 import sdk.chat.core.dao.Thread
@@ -38,13 +37,12 @@ import sdk.guru.common.RX
 import smartadapter.SmartRecyclerAdapter
 import smartadapter.viewevent.listener.OnClickEventListener
 import smartadapter.viewevent.listener.OnLongClickEventListener
-import java.util.*
 import kotlin.math.abs
 
 /**
  * Created by Ben Smiley on 24/11/14.
  */
-open class ThreadDetailsActivity: ImagePreviewActivity() {
+open class ThreadDetailsActivity : ImagePreviewActivity() {
 
     open lateinit var thread: Thread
     open lateinit var adapter: SmartRecyclerAdapter
@@ -117,29 +115,44 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
             }
         })
 
-        leaveButton = ButtonViewModel(getString(R.string.leave_chat), resources.getColor(R.color.red), object : ButtonRunnable {
-            override fun run(value: Activity) {
-                ChatSDK.thread().leaveThread(thread).doOnComplete { }.subscribe(this@ThreadDetailsActivity)
-            }
-        })
+        leaveButton = ButtonViewModel(
+            getString(R.string.leave_chat),
+            resources.getColor(R.color.red),
+            object : ButtonRunnable {
+                override fun run(value: Activity) {
+                    ChatSDK.thread()?.leaveThread(thread)?.doOnComplete { }
+                        ?.subscribe(this@ThreadDetailsActivity)
+                }
+            })
 
-        destroyButton = ButtonViewModel(getString(R.string.destroy), resources.getColor(R.color.red), object : ButtonRunnable {
-            override fun run(value: Activity) {
-                ChatSDK.thread().destroy(thread).subscribe()
-            }
-        })
+        destroyButton = ButtonViewModel(
+            getString(R.string.destroy),
+            resources.getColor(R.color.red),
+            object : ButtonRunnable {
+                override fun run(value: Activity) {
+                    ChatSDK.thread()?.destroy(thread)?.subscribe()
+                }
+            })
 
-        editButton = ButtonViewModel(getString(R.string.edit), resources.getColor(R.color.blue), object : ButtonRunnable {
-            override fun run(value: Activity) {
-                ChatSDK.ui().startEditThreadActivity(this@ThreadDetailsActivity, thread.entityID)
-            }
-        })
+        editButton = ButtonViewModel(
+            getString(R.string.edit),
+            resources.getColor(R.color.blue),
+            object : ButtonRunnable {
+                override fun run(value: Activity) {
+                    ChatSDK.ui()
+                        .startEditThreadActivity(this@ThreadDetailsActivity, thread.entityID)
+                }
+            })
 
-        joinButton = ButtonViewModel(getString(R.string.join), resources.getColor(R.color.blue), object : ButtonRunnable {
-            override fun run(value: Activity) {
-                ChatSDK.thread().joinThread(thread).doOnError(this@ThreadDetailsActivity).subscribe()
-            }
-        })
+        joinButton = ButtonViewModel(
+            getString(R.string.join),
+            resources.getColor(R.color.blue),
+            object : ButtonRunnable {
+                override fun run(value: Activity) {
+                    ChatSDK.thread()?.joinThread(thread)?.doOnError(this@ThreadDetailsActivity)
+                        ?.subscribe()
+                }
+            })
 
         if (thread.typeIs(ThreadType.Group)) {
             onlineIndicator.visibility = View.INVISIBLE
@@ -148,73 +161,86 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
         }
 
         adapter = SmartRecyclerAdapter
-                .items(items)
-                .map(ThreadUser::class, ThreadUserViewHolder::class)
-                .map(SectionViewModel::class, SectionViewHolder::class)
-                .map(DividerViewModel::class, DividerViewHolder::class)
-                .map(ButtonViewModel::class, ButtonViewHolder::class)
-                .add(OnClickEventListener {
-                    val item = items[it.position]
-                    if (item is ThreadUser) {
-                        onClickRelay.accept(item.user)
-                        // Refresh the roles in case another user's role changes
-                        ChatSDK.thread().refreshRoles(thread).observeOn(RX.main()).doOnComplete(Action {
-                            ChatSDK.ui().startModerationActivity(this, thread.entityID, item.user.entityID)
-                        }).subscribe()
-                    }
-                    if (item is ButtonViewModel) {
-                        item.click(this)
-                    }
-                })
-                .add(OnLongClickEventListener {
-                    val item = items[it.position]
-                    if (item is ThreadUser) {
-                        onLongClickRelay.accept(item.user)
-                    }
-                })
-                .into(recyclerView)
+            .items(items)
+            .map(ThreadUser::class, ThreadUserViewHolder::class)
+            .map(SectionViewModel::class, SectionViewHolder::class)
+            .map(DividerViewModel::class, DividerViewHolder::class)
+            .map(ButtonViewModel::class, ButtonViewHolder::class)
+            .add(OnClickEventListener {
+                val item = items[it.position]
+                if (item is ThreadUser) {
+                    onClickRelay.accept(item.user)
+                    // Refresh the roles in case another user's role changes
+                    ChatSDK.thread()
+                        ?.refreshRoles(thread)
+                        ?.observeOn(RX.main())
+                        ?.doOnComplete {
+                            ChatSDK.ui()
+                                .startModerationActivity(this, thread.entityID, item.user.entityID)
+                        }
+                        ?.subscribe()
+                }
+                if (item is ButtonViewModel) {
+                    item.click(this)
+                }
+            })
+            .add(OnLongClickEventListener {
+                val item = items[it.position]
+                if (item is ThreadUser) {
+                    onLongClickRelay.accept(item.user)
+                }
+            })
+            .into(recyclerView)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        dm.add(ChatSDK.events().sourceOnMain()
-                .filter(NetworkEvent.filterType(EventType.ThreadUserAdded))
-                .filter(NetworkEvent.filterThreadEntityID(thread.entityID))
-                .subscribe(Consumer { networkEvent: NetworkEvent ->
+        dm.add(
+            ChatSDK.events()?.sourceOnMain()
+                ?.filter(NetworkEvent.filterType(EventType.ThreadUserAdded))
+                ?.filter(NetworkEvent.filterThreadEntityID(thread.entityID))
+                ?.subscribe(Consumer { networkEvent: NetworkEvent ->
                     reloadData()
-                }, this))
+                }, this)
+        )
 
-        dm.add(ChatSDK.events().sourceOnMain()
-                .filter(NetworkEvent.filterType(EventType.ThreadUserRemoved))
-                .filter(NetworkEvent.filterThreadEntityID(thread.entityID))
-                .subscribe(Consumer { networkEvent: NetworkEvent ->
+        dm.add(
+            ChatSDK.events()?.sourceOnMain()
+                ?.filter(NetworkEvent.filterType(EventType.ThreadUserRemoved))
+                ?.filter(NetworkEvent.filterThreadEntityID(thread.entityID))
+                ?.subscribe(Consumer { networkEvent: NetworkEvent ->
 //                    if (networkEvent.user.isMe) {
-                        reloadData()
+                    reloadData()
 //                    } else {
 //                        remove(networkEvent.user)
 //                    }
-                }, this))
+                }, this)
+        )
 
-        dm.add(ChatSDK.events().sourceOnMain()
-                .filter(NetworkEvent.filterType(EventType.ThreadMetaUpdated))
-                .filter(NetworkEvent.filterThreadEntityID(thread.entityID))
-                .subscribe(Consumer { networkEvent: NetworkEvent? ->
+        dm.add(
+            ChatSDK.events()?.sourceOnMain()
+                ?.filter(NetworkEvent.filterType(EventType.ThreadMetaUpdated))
+                ?.filter(NetworkEvent.filterThreadEntityID(thread.entityID))
+                ?.subscribe(Consumer { networkEvent: NetworkEvent? ->
                     reloadInterface()
-                }, this))
+                }, this)
+        )
 
-        dm.add(ChatSDK.events().sourceOnMain()
-                .filter(NetworkEvent.filterRoleUpdated(thread))
-                .subscribe(Consumer { networkEvent: NetworkEvent ->
+        dm.add(
+            ChatSDK.events()?.sourceOnMain()
+                ?.filter(NetworkEvent.filterRoleUpdated(thread))
+                ?.subscribe(Consumer { networkEvent: NetworkEvent ->
                     if (networkEvent.user.isMe) {
                         reloadButtons()
                     }
                     reloadData()
-                }, this))
+                }, this)
+        )
 
-        dm.add(ChatSDK.events().sourceOnMain()
-                .filter(NetworkEvent.filterPresence(thread))
-                .subscribe { networkEvent: NetworkEvent ->
-                    update(networkEvent.user)
-                })
+        dm.add(ChatSDK.events()?.sourceOnMain()
+            ?.filter(NetworkEvent.filterPresence(thread))
+            ?.subscribe { networkEvent: NetworkEvent ->
+                update(networkEvent.user)
+            })
 
         addUsersFab.setOnClickListener { v: View? ->
             addUsersFab.isEnabled = false
@@ -222,7 +248,7 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
         }
 
         refreshFab.setOnClickListener { v: View? ->
-            ChatSDK.thread().refreshRoles(thread).subscribe()
+            ChatSDK.thread()?.refreshRoles(thread)?.subscribe()
         }
 
         val profileHeader = UIModule.config().profileHeaderImage
@@ -245,18 +271,27 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
         supportActionBar?.title = name
         supportActionBar?.setHomeButtonEnabled(true)
 
-        avatarImageView.setOnClickListener { v: View? -> zoomImageFromThumbnail(avatarImageView, thread.imageUrl) }
-        ThreadImageBuilder.load(avatarImageView, thread, Dimen.from(this, R.dimen.large_avatar_width))
+        avatarImageView.setOnClickListener { v: View? ->
+            zoomImageFromThumbnail(
+                avatarImageView,
+                thread.imageUrl
+            )
+        }
+        ThreadImageBuilder.load(
+            avatarImageView,
+            thread,
+            Dimen.from(this, R.dimen.large_avatar_width)
+        )
     }
 
     open fun reloadButtons() {
-        if (ChatSDK.thread().canAddUsersToThread(thread)) {
+        if (ChatSDK.thread()?.canAddUsersToThread(thread) == true) {
             addUsersFab.setImageDrawable(Icons.get(this, Icons.choose().add, R.color.white))
             addUsersFab.visibility = View.VISIBLE
         } else {
             addUsersFab.visibility = View.INVISIBLE
         }
-        if (ChatSDK.thread().canRefreshRoles(thread)) {
+        if (ChatSDK.thread()?.canRefreshRoles(thread) == true) {
             refreshFab.setImageDrawable(Icons.get(this, Icons.choose().refresh, R.color.white))
             refreshFab.visibility = View.VISIBLE
         } else {
@@ -278,7 +313,9 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
 
         if (isGroup) {
             items.add(SectionViewModel(getString(R.string.me)).hideBorders(true))
-            items.add(getThreadUser(ChatSDK.currentUser()))
+            val user = ChatSDK.currentUser()
+            if (user != null)
+                items.add(getThreadUser(user))
             if (threadUsers.isNotEmpty()) {
                 items.add(SectionViewModel(getString(R.string.participants)))
             }
@@ -290,23 +327,24 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
 
         items.addAll(threadUsers)
 
+        val threads = ChatSDK.thread() ?: return
         // Only the creator can modify the group. Also, private 1-to-1 chats can't be edited
-        if (ChatSDK.thread().canEditThreadDetails(thread)) {
+        if (threads.canEditThreadDetails(thread)) {
             items.add(DividerViewModel())
             items.add(editButton)
         }
 
-        if (ChatSDK.thread().canLeaveThread(thread)) {
+        if (threads.canLeaveThread(thread)) {
             items.add(DividerViewModel())
             items.add(leaveButton)
         }
 
-        if (ChatSDK.thread().canJoinThread(thread)) {
+        if (threads.canJoinThread(thread)) {
             items.add(DividerViewModel())
             items.add(joinButton)
         }
 
-        if (ChatSDK.thread().canDestroy(thread)) {
+        if (threads.canDestroy(thread)) {
             items.add(DividerViewModel())
             items.add(destroyButton)
         }
@@ -335,8 +373,9 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
 
     override fun onResume() {
         super.onResume()
-        if (ChatSDK.thread().canRefreshRoles(thread)) {
-            ChatSDK.thread().refreshRoles(thread).subscribe()
+        val threads = ChatSDK.thread() ?: return
+        if (threads.canRefreshRoles(thread)) {
+            threads.refreshRoles(thread).subscribe()
         }
         //        reloadData(false);
     }
@@ -360,7 +399,7 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
         }
         val threadEntityID = bundle.getString(Keys.IntentKeyThreadEntityID)
         if (threadEntityID != null && threadEntityID.isNotEmpty()) {
-            return ChatSDK.db().fetchThreadWithEntityID(threadEntityID)
+            return ChatSDK.db()?.fetchThreadWithEntityID(threadEntityID)
         } else {
             finish()
         }
@@ -374,7 +413,7 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.activity_thread_details_menu, menu)
-        if (!ChatSDK.thread().muteEnabled(thread)) {
+        if (ChatSDK.thread()?.muteEnabled(thread) != true) {
             menu.removeItem(R.id.action_mute)
         }
         return true
@@ -386,9 +425,9 @@ open class ThreadDetailsActivity: ImagePreviewActivity() {
         }
         if (item.itemId == R.id.action_mute) {
             if (thread.isMuted) {
-                ChatSDK.thread().unmute(thread).subscribe(this)
+                ChatSDK.thread()?.unmute(thread)?.subscribe(this)
             } else {
-                ChatSDK.thread().mute(thread).subscribe(this)
+                ChatSDK.thread()?.mute(thread)?.subscribe(this)
             }
             invalidateOptionsMenu()
         }

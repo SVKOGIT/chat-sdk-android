@@ -14,15 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.DialogFragment;
 
 import butterknife.ButterKnife;
 import io.reactivex.CompletableObserver;
-import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import sdk.chat.core.handlers.AuthenticationHandler;
 import sdk.chat.core.session.ChatSDK;
 import sdk.chat.ui.ChatSDKUI;
 import sdk.chat.ui.activities.BaseActivity;
@@ -47,7 +48,7 @@ public abstract class BaseFragment extends DialogFragment implements Consumer<Th
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
         rootView = inflater.inflate(getLayout(), container, false);
@@ -60,6 +61,7 @@ public abstract class BaseFragment extends DialogFragment implements Consumer<Th
             public Context getContext() {
                 return BaseFragment.this.getContext();
             }
+
             @Override
             public View getRootView() {
                 return getView();
@@ -82,24 +84,29 @@ public abstract class BaseFragment extends DialogFragment implements Consumer<Th
         }, exceptIDs);
     }
 
-    protected abstract @LayoutRes int getLayout();
+    protected abstract @LayoutRes
+    int getLayout();
 
-    public void hideKeyboard () {
+    public void hideKeyboard() {
         BaseActivity.hideKeyboard(getActivity());
     }
 
     protected abstract void initViews();
 
-    public void setTabVisibility (boolean isVisible) {
+    public void setTabVisibility(boolean isVisible) {
         tabIsVisible = isVisible;
     }
 
-    abstract public void clearData ();
-    public void safeReloadData () {
-        if(getView() != null && ChatSDK.auth().isAuthenticated()) {
+    abstract public void clearData();
+
+    public void safeReloadData() {
+        AuthenticationHandler auth = ChatSDK.auth();
+        boolean isAuthenticated = auth != null ? auth.isAuthenticated() : false;
+        if (getView() != null && isAuthenticated) {
             reloadData();
         }
     }
+
     public abstract void reloadData();
 
     @Override
@@ -133,6 +140,7 @@ public abstract class BaseFragment extends DialogFragment implements Consumer<Th
 
     /**
      * Called once if the deferred computation 'throws' an exception.
+     *
      * @param e the exception, not null.
      */
     public void onError(@NonNull Throwable e) {
@@ -143,36 +151,38 @@ public abstract class BaseFragment extends DialogFragment implements Consumer<Th
         onError(t);
     }
 
-    /** Show a SuperToast with the given text. */
-    protected void showToast(@StringRes int textResourceId){
+    /**
+     * Show a SuperToast with the given text.
+     */
+    protected void showToast(@StringRes int textResourceId) {
         alert.showToast(textResourceId);
     }
 
-    protected void showToast(String text){
+    protected void showToast(String text) {
         alert.showToast(text);
     }
 
-    protected void showSnackbar(int textResourceId, int duration){
+    protected void showSnackbar(int textResourceId, int duration) {
         alert.showSnackbar(textResourceId, duration);
     }
 
-    protected void showSnackbar(int textResourceId){
+    protected void showSnackbar(int textResourceId) {
         alert.showSnackbar(textResourceId);
     }
 
-    protected void showSnackbar (String text) {
+    protected void showSnackbar(String text) {
         alert.showSnackbar(text);
     }
 
-    protected void showSnackbar (String text, int duration) {
+    protected void showSnackbar(String text, int duration) {
         alert.showSnackbar(text, duration);
     }
 
-    protected Consumer<? super Throwable> toastOnErrorConsumer () {
+    protected Consumer<? super Throwable> toastOnErrorConsumer() {
         return alert.toastOnErrorConsumer();
     }
 
-    protected Consumer<? super Throwable> snackbarOnErrorConsumer () {
+    protected Consumer<? super Throwable> snackbarOnErrorConsumer() {
         return alert.snackbarOnErrorConsumer();
     }
 

@@ -42,6 +42,7 @@ public class FirebaseModule extends AbstractModule implements NetworkAdapterProv
         config = new FirebaseConfig<>(this);
     }
 
+    @NonNull
     @Override
     public Class<? extends BaseNetworkAdapter> getNetworkAdapter() {
         return config.networkAdapter;

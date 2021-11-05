@@ -2,6 +2,8 @@ package sdk.chat.ui.fragments;
 
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +65,7 @@ public class PublicThreadsFragment extends ThreadsFragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         /* Cant use switch in the library*/
         int id = item.getItemId();
 

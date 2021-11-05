@@ -30,16 +30,16 @@ class ThreadUserViewHolder(parentView: ViewGroup) :
 
             nameTextView.text = user.name
             if (thread.typeIs(ThreadType.Group)) {
-                if (ChatSDK.thread().isActive(thread, user)) {
+                if (ChatSDK.thread()?.isActive(thread, user) == true) {
                     setAvailability(Availability.Available)
                 } else {
                     setAvailability(Availability.Unavailable)
                 }
 
-                if (ChatSDK.thread().rolesEnabled(thread)) {
-                    val role = ChatSDK.thread().roleForUser(thread, user)
+                if (ChatSDK.thread()?.rolesEnabled(thread) == true) {
+                    val role = ChatSDK.thread()?.roleForUser(thread, user)
                     if (role != null) {
-                        statusTextView.text = ChatSDK.thread().localizeRole(role)
+                        statusTextView.text = ChatSDK.thread()?.localizeRole(role)
                     } else {
                         statusTextView.text = ""
                     }
