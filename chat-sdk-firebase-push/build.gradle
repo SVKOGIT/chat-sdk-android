@@ -42,9 +42,9 @@ dependencies {
     implementation project(':chat-sdk-core-ui')
     implementation project(':chat-sdk-firebase-adapter')
 
-    implementation "com.google.firebase:firebase-messaging:$firebaseMessagingVersion"
-    implementation "com.google.firebase:firebase-functions:$firebaseFunctionsVersion"
-    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.google.firebase:firebase-messaging:23.0.0"
+    implementation "com.google.firebase:firebase-functions:20.0.1"
+    implementation "com.squareup.okhttp3:okhttp:4.9.2"
 }
 
 ext {

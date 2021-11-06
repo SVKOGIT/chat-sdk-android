@@ -136,7 +136,7 @@ public class AudioBinder {
 
     public void updateRecordMode() {
         if (activity != null && messageInput != null && permissionsGranted) {
-            boolean keyboardVisible = KeyboardVisibilityEvent.INSTANCE.isKeyboardVisible(activity);
+            boolean keyboardVisible = KeyboardVisibilityEvent.isKeyboardVisible(activity);
             boolean isEmpty = messageInput.getInputEditText().getText().toString().isEmpty();
             if (keyboardVisible || !isEmpty || replyViewShowing) {
                 endRecordingMode();
