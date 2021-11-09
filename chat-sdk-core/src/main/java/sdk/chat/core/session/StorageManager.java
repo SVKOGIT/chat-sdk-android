@@ -173,14 +173,19 @@ public class StorageManager {
         return Single.defer(() -> Single.just(fetchUserWithEntityID(entityID)).subscribeOn(RX.db()));
     }
 
+    @NonNull
     public List<Thread> fetchThreadsWithType(int type) {
+        String currentUser = ChatSDK.currentUserID();
+        if (currentUser == null) {
+            return Collections.emptyList();
+        }
         QueryBuilder<Thread> qb = DaoCore.daoSession.queryBuilder(Thread.class);
         qb.where(ThreadDao.Properties.Type.eq(type));
-        qb.where(ThreadDao.Properties.UserAccountID.eq(ChatSDK.currentUserID()));
+        qb.where(ThreadDao.Properties.UserAccountID.eq(currentUser));
         return qb.list();
     }
 
-    public synchronized Thread fetchOrCreateThreadWithEntityID(String entityId) {
+    public synchronized Thread fetchOrCreateThreadWithEntityID(@NonNull String entityId) {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         Thread thread = fetchThreadWithEntityID(entityId);
@@ -194,15 +199,17 @@ public class StorageManager {
         return thread;
     }
 
-    public synchronized Thread fetchThreadWithEntityID(String entityID) {
+    @Nullable
+    public synchronized Thread fetchThreadWithEntityID(@NonNull String entityID) {
+        String currentUser = ChatSDK.currentUserID();
+        if (currentUser == null) {
+            return null;
+        }
         QueryBuilder<Thread> qb = DaoCore.daoSession.queryBuilder(Thread.class);
         qb.where(ThreadDao.Properties.EntityID.eq(entityID));
-        qb.where(ThreadDao.Properties.UserAccountID.eq(ChatSDK.currentUserID()));
+        qb.where(ThreadDao.Properties.UserAccountID.eq(currentUser));
         List<Thread> threads = qb.list();
-        if (!threads.isEmpty()) {
-            return threads.get(0);
-        }
-        return null;
+        return !threads.isEmpty() ? threads.get(0) : null;
     }
 
 

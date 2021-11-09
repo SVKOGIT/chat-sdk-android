@@ -39,6 +39,7 @@ import sdk.chat.core.events.NetworkEvent;
 import sdk.chat.core.hook.HookEvent;
 import sdk.chat.core.interfaces.ThreadType;
 import sdk.chat.core.session.ChatSDK;
+import sdk.chat.core.session.StorageManager;
 import sdk.chat.core.types.MessageSendStatus;
 import sdk.chat.firebase.adapter.FirebaseEntity;
 import sdk.chat.firebase.adapter.FirebasePaths;
@@ -58,15 +59,28 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
 
     private Thread model;
 
-    public ThreadWrapper(Thread thread){
+    public ThreadWrapper(@NonNull Thread thread) {
         this.model = thread;
     }
-    
-    public ThreadWrapper(String entityId) {
-        this(ChatSDK.db().fetchOrCreateThreadWithEntityID(entityId));
+
+    public ThreadWrapper(@NonNull String entityId) throws IllegalStateException, IllegalArgumentException {
+        this(requireThreadWithEntityID(entityId));
     }
 
-    public Thread getModel(){
+    @NonNull
+    private static Thread requireThreadWithEntityID(@NonNull String entityId) throws IllegalStateException, IllegalArgumentException {
+        StorageManager database = ChatSDK.db();
+        if (database == null) {
+            throw new IllegalStateException("Database is null and was not initialized");
+        }
+        Thread thread = database.fetchOrCreateThreadWithEntityID(entityId);
+        if (thread == null) {
+            throw new IllegalArgumentException(String.format("Thread with entityId=%s does not exist", entityId));
+        }
+        return thread;
+    }
+
+    public Thread getModel() {
         return model;
     }
 
@@ -100,7 +114,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
         messagesOff();
         usersOff();
         permissionsOff();
-        if(ChatSDK.typingIndicator() != null) {
+        if (ChatSDK.typingIndicator() != null) {
             ChatSDK.typingIndicator().typingOff(model);
         }
     }
@@ -139,7 +153,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
             // We do it this way because otherwise when we exceed the number of messages,
             // This event is triggered as the messages go out of scope
             int indexOfFirstDeletableMessage = model.indexOfFirstDeletableMessage();
-            if (indexOfFirstDeletableMessage >=0 ) {
+            if (indexOfFirstDeletableMessage >= 0) {
                 startDate = model.getMessages().get(indexOfFirstDeletableMessage).getDate();
             }
 
@@ -151,7 +165,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
             }
 
             realtime.childOn(query).observeOn(RX.db()).doOnNext(change -> {
-                if(change.getSnapshot().exists() && change.getType() == EventType.Removed) {
+                if (change.getSnapshot().exists() && change.getType() == EventType.Removed) {
                     Message message = ChatSDK.db().fetchEntityWithEntityID(change.getSnapshot().getKey(), Message.class);
                     // If the message send fails for example if there is a permission error
                     if (message != null && (message.getSender() == null || !message.getSender().isMe() || message.getMessageStatus() != MessageSendStatus.Failed)) {
@@ -182,7 +196,8 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
     /**
      * Start listening to incoming messages.
      *
-     * @return*/
+     * @return
+     */
     protected void messagesAddedOn() {
 
         if (RealtimeReferenceManager.shared().isOn(messagesRef())) {
@@ -198,11 +213,11 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
             Long startTimestamp = null;
 
             Date lastMessageAddedDate = model.getLastMessageAddedDate();
-            if(lastMessageAddedDate != null) {
+            if (lastMessageAddedDate != null) {
                 startTimestamp = lastMessageAddedDate.getTime() + 1;
             }
 
-            if(deletedTimestamp > 0) {
+            if (deletedTimestamp > 0) {
                 model.setLoadMessagesFrom(new Date(deletedTimestamp));
 
                 // If there were no new messages since the deleted date, then we know the thread is still in the
@@ -242,7 +257,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                 if (messageAddedDate == null && finalStartTimestamp != null) {
                     messageAddedDate = new Date(finalStartTimestamp);
                 }
-                if(messageAddedDate != null) {
+                if (messageAddedDate != null) {
                     query = query.startAt(messageAddedDate.getTime() + 1, Keys.Date);
                 }
 
@@ -335,6 +350,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
     }
 
     //Note the old listener that was used to process the thread bundle is still in use.
+
     /**
      * Start listening to users added to this thread.
      **/
@@ -342,7 +358,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
 
         final DatabaseReference ref = FirebasePaths.threadUsersRef(model.getEntityID());
 
-        if(!RealtimeReferenceManager.shared().isOn(ref)) {
+        if (!RealtimeReferenceManager.shared().isOn(ref)) {
             RXRealtime realtime = new RXRealtime(this);
 
             ref.addValueEventListener(new ValueEventListener() {
@@ -350,7 +366,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.getValue() != null) {
                         Map<String, Object> map = snapshot.getValue(Generic.mapStringObject());
-                        for (String key: map.keySet()) {
+                        for (String key : map.keySet()) {
                             final UserWrapper user = new UserWrapper(key);
                             user.on().subscribe();
                             model.addUser(user.getModel());
@@ -385,7 +401,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                             model.setPermission(user.getModel().getEntityID(), Permission.None, true, false);
                         }
                     } else {
-                        if(model.getUserThreadLink(user.getModel().getId()).setHasLeft(true)) {
+                        if (model.getUserThreadLink(user.getModel().getId()).setHasLeft(true)) {
                             ChatSDK.events().source().accept(NetworkEvent.threadUserRemoved(model, user.getModel()));
                         }
                     }
@@ -431,8 +447,10 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
     }
 
     //Note - Maybe should reject when cant find value in the user deleted path.
+
     /**
      * Get the date when the thread was deleted
+     *
      * @return Single On success return the date or -1 if the thread hasn't been deleted
      **/
     private Single<Long> threadDeletedDate() {
@@ -446,10 +464,9 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                     .child(Keys.Deleted);
 
             currentThreadUser.addListenerForSingleValueEvent(new RealtimeEventListener().onValue((snapshot, hasValue) -> {
-                if(hasValue) {
+                if (hasValue) {
                     e.onSuccess((Long) snapshot.getValue());
-                }
-                else {
+                } else {
                     e.onSuccess(Long.valueOf(-1));
                 }
             }));
@@ -458,6 +475,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
     }
 
     //Note - Maybe should treat group thread and one on one thread the same
+
     /**
      * Deleting a thread, CoreThread isn't always actually deleted from the db.
      * We mark the thread as deleted and mark the user in the thread users ref as deleted.
@@ -480,7 +498,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
         return loadMoreMessages(after, before, 0);
     }
 
-    protected Single<List<Message>> loadMoreMessages(@Nullable final Date after, @Nullable final Date before, final Integer numberOfMessages){
+    protected Single<List<Message>> loadMoreMessages(@Nullable final Date after, @Nullable final Date before, final Integer numberOfMessages) {
         return Single.create((SingleOnSubscribe<List<Message>>) e -> {
 
             DatabaseReference messageRef = FirebasePaths.threadMessagesRef(model.getEntityID());
@@ -502,7 +520,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
             query.addListenerForSingleValueEvent(new RealtimeEventListener().onValue((snapshot, hasValue) -> {
                 List<Message> messages = new ArrayList<>();
 
-                if(hasValue) {
+                if (hasValue) {
 
                     Map<String, Object> hashData = snapshot.getValue(Generic.mapStringObject());
 
@@ -541,7 +559,8 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
     /**
      * Updating thread details from given map
      **/
-    @SuppressWarnings("all") // To remove setType warning.
+    @SuppressWarnings("all")
+    // To remove setType warning.
     void deserialize(DataSnapshot snapshot) {
 
         if (snapshot.hasChild(Keys.CreationDate)) {
@@ -567,7 +586,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
         if (snapshot.hasChild(Keys.Type)) {
             type = snapshot.child(Keys.Type).getValue(Long.class);
         }
-        model.setType((int)type);
+        model.setType((int) type);
 
         Map<String, Object> meta = snapshot.getValue(Generic.mapStringObject());
 
@@ -576,7 +595,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
         // is contained in details is not added to meta
         Map<String, Object> details = serialize();
 
-        for (String key: details.keySet()) {
+        for (String key : details.keySet()) {
             meta.remove(key);
         }
         model.setMetaValues(meta, false);
@@ -611,8 +630,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                     if (databaseError == null) {
                         FirebaseEntity.pushThreadUpdated(model.getEntityID()).subscribe(ChatSDK.events());
                         e.onComplete();
-                    }
-                    else {
+                    } else {
                         e.onError(databaseError.toException());
                     }
                 });
@@ -654,6 +672,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
 
     /**
      * When we first open the thread get our permission level to decide which listeners to add
+     *
      * @return
      */
     public Completable myPermission() {
@@ -737,7 +756,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
         });
     }
 
-    public DatabaseReference messagesRef () {
+    public DatabaseReference messagesRef() {
         return FirebasePaths.threadMessagesRef(model.getEntityID());
     }
 
