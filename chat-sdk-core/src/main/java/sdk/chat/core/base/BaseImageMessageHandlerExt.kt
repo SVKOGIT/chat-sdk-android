@@ -1,7 +1,7 @@
 package sdk.chat.core.base
 
 import android.graphics.Bitmap
-import androidx.exifinterface.media.ExifInterface
+import android.graphics.BitmapFactory
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.format
 import id.zelory.compressor.constraint.quality
@@ -33,10 +33,7 @@ data class ImageExtras(
 
 @JvmOverloads
 fun File.getImageExtras(maxImageSize: Int = 600): ImageExtras {
-    val exif = exif
-
-    val width = exif.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-    val height = exif.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+    val (width, height) = getImageSize()
 
     val dstWidth: Int
     val dstHeight: Int
@@ -46,7 +43,7 @@ fun File.getImageExtras(maxImageSize: Int = 600): ImageExtras {
             dstWidth = width
             dstHeight = height
         }
-        height > width -> {
+        height < width -> {
             dstWidth = maxImageSize
             dstHeight = maxImageSize / width * height
         }
@@ -59,7 +56,16 @@ fun File.getImageExtras(maxImageSize: Int = 600): ImageExtras {
     return ImageExtras(dstWidth, dstHeight)
 }
 
-private val File.exif
-    get() = inputStream().use {
-        ExifInterface(it)
+private fun File.getImageSize(): ImageExtras {
+    val options = getOptions()
+    return ImageExtras(options.outWidth, options.outHeight)
+}
+
+private fun File.getOptions(): BitmapFactory.Options {
+    return BitmapFactory.Options().apply {
+        inJustDecodeBounds = true
+        inputStream().use {
+            BitmapFactory.decodeStream(it, null, this)
+        }
     }
+}
