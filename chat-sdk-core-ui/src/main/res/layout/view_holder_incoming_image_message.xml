@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginLeft="16dp"
     android:layout_marginTop="8dp"
     android:layout_marginRight="16dp"
@@ -15,12 +15,12 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/image"
         android:layout_alignRight="@id/image"
-        android:layout_marginStart="10dp"
         android:layout_alignParentTop="true"
-        android:textColor="?incomingUserNameTextColor"
+        android:layout_marginStart="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="0dp"
         android:fontFamily="?incomingUserNameTextFont"
+        android:textColor="?incomingUserNameTextColor"
         android:textSize="?incomingUserNameTextSize"
         tools:text="@tools:sample/full_names" />
 
@@ -28,8 +28,8 @@
         android:id="@id/messageUserAvatar"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_marginEnd="4dp"
         android:layout_alignBottom="@+id/image"
+        android:layout_marginEnd="4dp"
         android:layout_marginRight="4dp"
         app:civ_circle_background_color="?avatarBackgroundColor"
         tools:src="@tools:sample/avatars" />
@@ -43,7 +43,7 @@
         android:layout_alignEnd="@id/messageUserAvatar"
         android:layout_alignRight="@id/messageUserAvatar" />
 
-    <com.github.siyamed.shapeimageview.mask.PorterShapeImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -52,9 +52,8 @@
         android:layout_toEndOf="@id/messageUserAvatar"
         android:layout_toRightOf="@id/messageUserAvatar"
         android:adjustViewBounds="true"
-        app:siShape="?incomingBubbleDrawable"
-        app:siSquare="false"
-        tools:src="@tools:sample/avatars" />
+        app:shapeAppearance="@style/ShapeAppearance.Chat.In"
+        tools:src="@tools:sample/backgrounds/scenic" />
 
     <LinearLayout
         android:id="@+id/imageOverlayContainer"
@@ -79,10 +78,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/image"
-        android:layout_marginLeft="16dp"
         android:layout_alignEnd="@id/image"
         android:layout_alignRight="@id/image"
         android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
         tools:text="@tools:sample/lorem" />
 
 </RelativeLayout>
