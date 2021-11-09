@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import sdk.chat.core.session.ChatSDK
 import java.io.File
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 @JvmOverloads
 fun compressImage(file: File, maxImageSize: Int = 600): File {
@@ -18,10 +19,10 @@ fun compressImage(file: File, maxImageSize: Int = 600): File {
 
     return runBlocking {
         Compressor.compress(context, file) {
-            quality(80)
-            format(Bitmap.CompressFormat.JPEG)
             if (width != 0 && height != 0)
                 resolution(width, height)
+            format(Bitmap.CompressFormat.JPEG)
+            quality(80)
         }
     }
 }
@@ -45,10 +46,10 @@ fun File.getImageExtras(maxImageSize: Int = 600): ImageExtras {
         }
         height < width -> {
             dstWidth = maxImageSize
-            dstHeight = maxImageSize / width * height
+            dstHeight = (maxImageSize.toFloat() / width * height).roundToInt()
         }
         else -> {
-            dstWidth = maxImageSize / height * width
+            dstWidth = (maxImageSize.toFloat() / height * width).roundToInt()
             dstHeight = maxImageSize
         }
     }

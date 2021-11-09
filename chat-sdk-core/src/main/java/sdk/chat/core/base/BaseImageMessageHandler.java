@@ -27,7 +27,6 @@ public class BaseImageMessageHandler implements ImageMessageHandler {
             message.setValueForKey(extras.getWidth(), Keys.MessageImageWidth);
             message.setValueForKey(extras.getHeight(), Keys.MessageImageHeight);
             message.setValueForKey("file://" + imageFile.getAbsolutePath(), Keys.MessageImageURL);
-            System.out.println(imageFile.getAbsolutePath());
 
         }).setUploadable(new FileUploadable(imageFile, "image.jpg", "image/jpeg", uploadable -> {
             FileUploadable source = (FileUploadable) uploadable;

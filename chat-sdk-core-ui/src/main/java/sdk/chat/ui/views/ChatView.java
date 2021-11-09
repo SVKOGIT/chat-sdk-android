@@ -110,10 +110,24 @@ public class ChatView extends LinearLayout implements MessagesListAdapter.OnLoad
                         .override(Dimen.from(getContext(), R.dimen.small_avatar_width), Dimen.from(getContext(), R.dimen.small_avatar_height))
                         .into(imageView);
             } else {
+                final int maxSize = maxImageWidth();
+                final int currentWidth = ilp.width == 0 ? maxSize : ilp.width;
+                final int currentHeight = ilp.height == 0 ? maxSize : ilp.height;
+                final int width;
+                final int height;
+
+                if (currentWidth > currentHeight) {
+                    width = maxSize;
+                    height = maxSize / currentWidth * currentHeight;
+                } else {
+                    width = maxSize / currentHeight * currentWidth;
+                    height = maxSize;
+                }
+
                 builder.load(url)
                         .error(ilp.error)
-                        .override(maxImageWidth(), maxImageWidth())
-                        .centerCrop()
+                        .override(width, height)
+                        .placeholder(imageView.getDrawable())
                         .into(imageView);
             }
         });
