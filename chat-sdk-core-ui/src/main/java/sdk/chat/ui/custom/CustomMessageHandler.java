@@ -12,7 +12,6 @@ import sdk.chat.core.rigs.MessageSendRig;
 import sdk.chat.core.session.ChatSDK;
 import sdk.chat.core.types.MessageSendStatus;
 import sdk.chat.ui.R;
-import sdk.chat.ui.activities.ChatActivity;
 import sdk.chat.ui.chat.model.MessageHolder;
 import sdk.chat.ui.utils.DialogUtils;
 import sdk.chat.ui.view_holders.base.BaseIncomingTextMessageViewHolder;
@@ -46,7 +45,7 @@ public abstract class CustomMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public boolean onLongClick(ChatActivity activity, View rootView, Message message) {
+    public boolean onLongClick(Activity activity, View rootView, Message message) {
         return false;
     }
 

@@ -4,30 +4,30 @@ import org.gradle.internal.os.OperatingSystem
 buildscript {
     repositories {
         google()
+        jcenter()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
+        classpath 'com.android.tools.build:gradle:7.0.4'
         classpath "com.google.gms:google-services:4.3.10"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.0'
         classpath 'com.google.firebase:perf-plugin:1.4.0'
         classpath "org.greenrobot:greendao-gradle-plugin:3.3.0"
-        classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
     }
 }
 
 ext {
     bintrayVersion = "1.8.4"
     mavenGradleVersion = "2.1"
-    androidxAppcompatVersion = "1.2.0"
-    androidxConstraintLayoutVersion = "2.1.0-alpha2"
+    androidxAppcompatVersion = "1.3.0"
+    androidxConstraintLayoutVersion = "2.1.0-beta02"
     androidxLifecycleExtensionsVersion = "2.2.0"
-    androidxRecyclerViewVersion = "1.2.0"
+    androidxRecyclerViewVersion = "1.2.1"
     androidxMultidexVersion = "2.0.1"
     androidxAnnotation = "1.2.0"
-    materialVersion = "1.2.1"
+    materialVersion = "1.3.0"
     playAuthVersion = "17.0.0"
     playMapsVersion = "17.0.0"
     playLocationVersion = "17.0.0"
@@ -48,8 +48,8 @@ ext {
     rxAndroidVersion = "2.1.1"
     rxRelayVersion = "2.1.1"
     rxQueueVersion = "2.0.0"
-    compressorVersion = "2.1.0"
-    okHttpVersion = "3.11.0"
+    compressorVersion = "2.1.1"
+    okHttpVersion = "3.12.1"
 //    okHttpVersion = "4.7.2"
     okHttpDownloaderVersion = "1.1.0"
     prettyTimeVersion = "4.0.1.Final"
@@ -64,11 +64,11 @@ ext {
     tinyLogVersion = "1.3.6"
     butterKnifeVersion = "10.2.1"
 
-    iconicsVersion = "5.0.0-a01"
+    iconicsVersion = "5.2.8"
     materialDrawerVersion = "8.4.3"
 
-    iconicsGoogleMaterialIconsVersion = "3.0.1.4.original-kotlin@aar"
-    iconicsFontAwesomeTypefaceVersion = "5.3.1.2-kotlin@aar"
+    iconicsGoogleMaterialIconsVersion = "4.0.0.1-kotlin@aar"
+    iconicsFontAwesomeTypefaceVersion = "5.9.0.2-kotlin@aar"
     materialSearchVersion = "1.4.0"
     materialSpinnerVersion = "1.3.1"
     keyboardVisibilityEventVersion = "3.0.0-RC2"
@@ -85,9 +85,9 @@ ext {
     androidNetworkingVersion = "1.0.2"
     pdfiumVersion = "1.9.0"
 
-    smackVersion = "4.3.4"
+    smackVersion = "4.4.3"
 //    smackVersion = "4.4.0"
-    activity_ktx_version = "1.2.0"
+    activity_ktx_version = "1.2.3"
 
     kotlin_version = "1.5.30"
 
@@ -99,12 +99,10 @@ allprojects {
     }
     repositories {
         google()
+        jcenter()
         mavenCentral()
-        maven { url "https://jitpack.io" }
-        //maven { url "https://dl.bintray.com/chat-sdk/chat-sdk-android" }
         maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
+        maven { url 'https://jitpack.io' }
     }
 }
 

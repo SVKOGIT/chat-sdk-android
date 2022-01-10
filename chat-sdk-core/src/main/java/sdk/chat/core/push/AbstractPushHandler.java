@@ -96,6 +96,9 @@ public abstract class AbstractPushHandler implements PushHandler {
         if (body == null || body.isEmpty() || !ChatSDK.config().clientPushEnabled) {
             return null;
         }
+        if (message.isReply() && message.getReply() != null) {
+            body = message.getReply();
+        }
 
         HashMap<String, String> users = new HashMap<>();
         for (User user : message.getThread().getUsers()) {

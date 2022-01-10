@@ -17,6 +17,7 @@ import sdk.chat.core.session.ChatSDK;
 import sdk.chat.core.session.Configure;
 import sdk.chat.core.utils.ProfileOption;
 import sdk.guru.common.BaseConfig;
+import sdk.guru.common.DisposableMap;
 
 
 public class ExtrasModule extends AbstractModule {
@@ -26,6 +27,8 @@ public class ExtrasModule extends AbstractModule {
     public static ExtrasModule shared() {
         return instance;
     }
+
+    public DisposableMap dm = new DisposableMap();
 
     /**
      * @see Config
@@ -99,6 +102,15 @@ public class ExtrasModule extends AbstractModule {
 
             // Show the QR code when the user clicks the profile option
             ChatSDK.ui().addProfileOption(new ProfileOption(ChatSDK.getString(sdk.chat.ui.extras.R.string.qr_code), (activity, userEntityID) -> {
+
+//                dm.add(ActivityResultPushSubjectHolder.shared()
+//                        .doFinally(() -> dm.dispose())
+//                        .subscribe(activityResult -> {
+//
+//
+//
+//                }));
+
                 Intent intent = new Intent(activity, Activity.class);
                 intent.putExtra(Keys.IntentKeyUserEntityID, userEntityID);
                 activity.startActivity(intent);

@@ -6,7 +6,6 @@ import io.reactivex.Completable;
 import sdk.chat.core.R;
 import sdk.chat.core.dao.Keys;
 import sdk.chat.core.dao.Message;
-import sdk.chat.core.dao.Thread;
 import sdk.chat.core.handlers.ImageMessageHandler;
 import sdk.chat.core.rigs.FileUploadable;
 import sdk.chat.core.rigs.MessageSendRig;

@@ -18,7 +18,6 @@ import java.util.List;
 
 import io.reactivex.plugins.RxJavaPlugins;
 import sdk.chat.core.base.BaseNetworkAdapter;
-import sdk.chat.core.dao.DaoCore;
 import sdk.chat.core.dao.Message;
 import sdk.chat.core.dao.User;
 import sdk.chat.core.handlers.AudioMessageHandler;
@@ -47,6 +46,9 @@ import sdk.chat.core.handlers.VideoMessageHandler;
 import sdk.chat.core.interfaces.IKeyStorage;
 import sdk.chat.core.interfaces.InterfaceAdapter;
 import sdk.chat.core.module.Module;
+import sdk.chat.core.notifications.NotificationDisplayHandler;
+import sdk.chat.core.rigs.DownloadManager;
+import sdk.chat.core.rigs.MessageSender;
 import sdk.chat.core.storage.FileManager;
 import sdk.chat.core.utils.AppBackgroundMonitor;
 import sdk.chat.core.utils.KeyStorage;
@@ -86,6 +88,12 @@ public class ChatSDK {
     protected IKeyStorage keyStorage;
     @NonNull
     protected List<Runnable> onActivateListeners = new ArrayList<>();
+    @NonNull
+    protected List<Runnable> onPermissionsRequestedListeners = new ArrayList<>();
+    @Nullable
+    protected DownloadManager downloadManager;
+    @Nullable
+    protected MessageSender messageSender;
 
     @NonNull
     public static ChatSDK shared() {
@@ -539,6 +547,9 @@ public class ChatSDK {
         if (builder != null)
             config = builder.config().build().build().config;
 
+        downloadManager = new DownloadManager(context);
+        messageSender = new MessageSender(context);
+
         Class<? extends BaseNetworkAdapter> networkAdapter = builder != null ? builder.networkAdapter : null;
         if (networkAdapter != null) {
             Logger.info("Network adapter provided by ChatSDK.configure call");
@@ -605,9 +616,7 @@ public class ChatSDK {
             throw new Exception("The interface adapter cannot be null. An interface adapter must be defined using ChatSDK.configure(...) or by a module");
         }
 
-        DaoCore.init(context);
-
-        storageManager = new StorageManager();
+        storageManager = new StorageManager(context);
 
         // Monitor the app so if it goes into the background we know
         AppBackgroundMonitor.shared().setEnabled(true);
@@ -664,6 +673,16 @@ public class ChatSDK {
         onActivateListeners.add(runnable);
     }
 
+    public void addOnPermissionRequestedListener(Runnable runnable) {
+        onPermissionsRequestedListeners.add(runnable);
+    }
+
+    public void permissionsRequested() {
+        for (Runnable r: onPermissionsRequestedListeners) {
+            r.run();
+        }
+    }
+
     @Nullable
     public String getLicenseIdentifier() {
         return licenseIdentifier;
@@ -672,6 +691,14 @@ public class ChatSDK {
     @Nullable
     public IKeyStorage getKeyStorage() {
         return keyStorage;
+    }
+
+    public static DownloadManager downloadManager() {
+        return shared().downloadManager;
+    }
+
+    public static MessageSender messageSender() {
+        return shared().messageSender;
     }
 
 }

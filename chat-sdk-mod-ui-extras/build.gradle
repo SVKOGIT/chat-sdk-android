@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'com.jakewharton.butterknife'
 }
 
 android {
@@ -58,6 +59,10 @@ dependencies {
 
     //implementation "androidmads.library.qrgenearator:QRGenearator:$qrGenerator"
     implementation "me.dm7.barcodescanner:zxing:$zxing"
+
+    implementation "com.jakewharton:butterknife:$butterKnifeVersion"
+    kapt "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
+
 }
 
 ext {

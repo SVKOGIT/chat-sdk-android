@@ -3,7 +3,6 @@ plugins {
     id 'kotlin-android'
     id 'maven-publish'
     id 'org.greenrobot.greendao'
-//    id 'com.jakewharton.hugo'
 }
 
 android {
@@ -39,7 +38,7 @@ android {
 }
 
 greendao {
-    schemaVersion 19
+    schemaVersion 20
     targetGenDir "src/main/java"
     daoPackage "sdk.chat.core.dao"
 }

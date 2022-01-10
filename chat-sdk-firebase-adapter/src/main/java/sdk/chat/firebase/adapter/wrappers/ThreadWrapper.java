@@ -57,7 +57,7 @@ import sdk.guru.realtime.RealtimeReferenceManager;
 
 public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
 
-    private Thread model;
+    protected Thread model;
 
     public ThreadWrapper(@NonNull Thread thread) {
         this.model = thread;
@@ -270,7 +270,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                         if (ChatSDK.blocking() == null || !ChatSDK.blocking().isBlocked(from)) {
                             model.setDeleted(false);
 
-                            MessageWrapper message = new MessageWrapper(change.getSnapshot());
+                            MessageWrapper message = FirebaseModule.config().provider.messageWrapper(change.getSnapshot());
 
                             // Temporarily set this because it's needed later on
                             message.getModel().setThread(model);
@@ -366,8 +366,8 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.getValue() != null) {
                         Map<String, Object> map = snapshot.getValue(Generic.mapStringObject());
-                        for (String key : map.keySet()) {
-                            final UserWrapper user = new UserWrapper(key);
+                        for (String key: map.keySet()) {
+                            final UserWrapper user = FirebaseModule.config().provider.userWrapper(key);
                             user.on().subscribe();
                             model.addUser(user.getModel());
                         }
@@ -381,7 +381,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
             });
 
             realtime.childOn(ref).map(change -> {
-                final UserWrapper user = new UserWrapper(change.getSnapshot().getKey());
+                final UserWrapper user = FirebaseModule.config().provider.userWrapper(change.getSnapshot().getKey());
                 user.on().subscribe();
 
                 if (change.getType() == EventType.Added) {
@@ -453,7 +453,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
      *
      * @return Single On success return the date or -1 if the thread hasn't been deleted
      **/
-    private Single<Long> threadDeletedDate() {
+    protected Single<Long> threadDeletedDate() {
 
         return Single.create((SingleOnSubscribe<Long>) e -> {
             User user = ChatSDK.currentUser();
@@ -526,7 +526,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
 
                     MessageWrapper message;
                     for (String key : hashData.keySet()) {
-                        message = new MessageWrapper(snapshot.child(key));
+                        message = FirebaseModule.config().provider.messageWrapper(snapshot.child(key));
                         model.addMessage(message.getModel(), false);
                         messages.add(message.getModel());
                     }
@@ -561,7 +561,7 @@ public class ThreadWrapper implements RXRealtime.DatabaseErrorListener {
      **/
     @SuppressWarnings("all")
     // To remove setType warning.
-    void deserialize(DataSnapshot snapshot) {
+    protected void deserialize(DataSnapshot snapshot) {
 
         if (snapshot.hasChild(Keys.CreationDate)) {
             Long date = snapshot.child(Keys.CreationDate).getValue(Long.class);
