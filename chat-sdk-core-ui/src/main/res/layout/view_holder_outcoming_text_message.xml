@@ -31,8 +31,8 @@
             android:paddingEnd="2dp"
             android:paddingRight="2dp"
             android:paddingBottom="2dp"
-            tools:visibility="visible"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <ImageView
                 android:id="@+id/replyImageView"
@@ -52,8 +52,8 @@
                 android:layout_marginLeft="2dp"
                 android:ellipsize="end"
                 android:maxLines="2"
-                android:textColor="?outcomingReplyTextColor"
                 android:padding="2dp"
+                android:textColor="?outcomingReplyTextColor"
                 android:textSize="?outcomingReplyTextSize"
                 tools:text="@tools:sample/lorem" />
 
@@ -69,9 +69,9 @@
                 android:layout_width="40dp"
                 android:layout_height="50dp"
                 android:layout_marginEnd="8dp"
-                tools:src="@tools:sample/backgrounds/scenic"
                 android:layout_marginRight="8dp"
-                android:scaleType="centerInside" />
+                android:scaleType="centerInside"
+                tools:src="@tools:sample/backgrounds/scenic" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -82,12 +82,12 @@
                 <TextView
                     android:id="@id/messageText"
                     android:layout_width="wrap_content"
-                    android:gravity="center_vertical"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:autoLink="all"
-                    android:textColorLink="?outcomingTextLinkColor"
+                    android:gravity="center_vertical"
                     android:linksClickable="true"
+                    android:textColorLink="?outcomingTextLinkColor"
                     tools:text="@tools:sample/lorem" />
 
             </LinearLayout>
@@ -109,16 +109,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginEnd="5dp"
-            android:maxLines="1"
             android:layout_marginRight="5dp"
+            android:maxLines="1"
             tools:text="@tools:sample/date/hhmm" />
 
-        <ImageView
-            android:id="@+id/readStatus"
-            android:layout_width="24dp"
-            tools:src="@drawable/icn_30_read"
-            android:layout_height="12dp"
-            android:layout_gravity="center_vertical" />
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/readStatus"
+                android:layout_width="24dp"
+                android:layout_height="12dp"
+                android:layout_gravity="center_vertical"
+                tools:src="@drawable/icn_30_read" />
+
+        </FrameLayout>
 
     </LinearLayout>
 </RelativeLayout>

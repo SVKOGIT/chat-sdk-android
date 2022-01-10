@@ -118,8 +118,8 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginRight="16dp"
-                    android:layout_toStartOf="@id/readStatus"
-                    android:layout_toLeftOf="@id/readStatus"
+                    android:layout_toStartOf="@id/readStatusWrapper"
+                    android:layout_toLeftOf="@id/readStatusWrapper"
                     android:layout_toEndOf="@id/dialogLastMessageUserAvatarWraper"
                     android:layout_toRightOf="@id/dialogLastMessageUserAvatarWraper"
                     android:ellipsize="end"
@@ -129,14 +129,22 @@
                     android:textSize="14sp"
                     tools:text="@tools:sample/lorem/random" />
 
-                <ImageView
-                    android:id="@id/readStatus"
-                    android:layout_width="26dp"
-                    android:layout_height="13dp"
+
+                <FrameLayout
+                    android:id="@+id/readStatusWrapper"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    tools:src="@drawable/icn_30_read" />
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:id="@id/readStatus"
+                        android:layout_width="26dp"
+                        android:layout_height="13dp"
+                        tools:src="@drawable/icn_30_read" />
+                </FrameLayout>
 
             </RelativeLayout>
 
