@@ -258,7 +258,9 @@ public class DaoCore {
 
     public static void drop() {
         for (AbstractDao<?, ?> dao : daoSession.getAllDaos()) {
-            dao.deleteAll();
+            if (!(dao instanceof UserDao)) {
+                dao.deleteAll();
+            }
         }
     }
 }
