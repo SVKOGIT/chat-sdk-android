@@ -17,6 +17,7 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import io.reactivex.SingleOnSubscribe;
 import sdk.chat.core.base.AbstractAuthenticationHandler;
+import sdk.chat.core.dao.DaoCore;
 import sdk.chat.core.dao.User;
 import sdk.chat.core.events.NetworkEvent;
 import sdk.chat.core.hook.HookEvent;
@@ -232,6 +233,8 @@ public class FirebaseAuthenticationHandler extends AbstractAuthenticationHandler
 
                         ChatSDK.events().source().accept(NetworkEvent.logout());
 
+                        DaoCore.drop();
+
                         if (ChatSDK.hook() != null) {
                             HashMap<String, Object> data = new HashMap<>();
                             data.put(HookEvent.User, user);
@@ -239,6 +242,7 @@ public class FirebaseAuthenticationHandler extends AbstractAuthenticationHandler
                         } else {
                             return Completable.complete();
                         }
+
                     }).subscribeOn(RX.computation()));
             return loggingOut.doFinally(this::setAuthStateToIdle);
         });
