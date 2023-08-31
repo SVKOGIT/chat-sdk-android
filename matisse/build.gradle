@@ -15,6 +15,7 @@
  */
 apply plugin: 'com.android.library'
 apply plugin: 'checkstyle'
+apply plugin: 'maven-publish'
 
 android {
 
@@ -79,3 +80,11 @@ task checkstyle(type:Checkstyle) {
     classpath = files()
     source 'src/main/java'
 }
+
+ext {
+    libraryName = 'Matisse'
+    artifact = 'matisse'
+    libraryDescription = 'Matisse'
+}
+
+apply from: '../bintray.gradle'
