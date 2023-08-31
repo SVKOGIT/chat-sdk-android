@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     api project(':chat-sdk-core')
+    api project(':matisse')
 
     api "androidx.recyclerview:recyclerview:1.2.1"
     implementation "org.ocpsoft.prettytime:prettytime:4.0.1.Final"
@@ -67,7 +68,7 @@ dependencies {
 
     api "de.hdodenhof:circleimageview:3.1.0"
 
-    implementation "sdk.chat:matisse:0.5.3-beta3b2"
+    //implementation "com.zhihu.android:matisse:0.5.3-beta3"
 
     implementation "com.jakewharton:butterknife:10.2.1"
     annotationProcessor "com.jakewharton:butterknife-compiler:10.2.1"

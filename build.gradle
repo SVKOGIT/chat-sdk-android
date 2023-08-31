@@ -102,9 +102,9 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         //maven { url "https://dl.bintray.com/chat-sdk/chat-sdk-android" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
-        maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
+        //maven { url "https://chatsdk.jfrog.io/artifactory/release/chat-sdk-android" }
+        //maven { url "https://chatsdk.jfrog.io/artifactory/release/chatkit" }
+        //maven { url "https://chatsdk.jfrog.io/artifactory/release/matisse" }
     }
 }
 
