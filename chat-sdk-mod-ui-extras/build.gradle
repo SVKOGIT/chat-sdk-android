@@ -46,8 +46,8 @@ dependencies {
     api project(':chat-sdk-core-ui')
 
     //required support lib modules
-    implementation "androidx.recyclerview:recyclerview:1.2.1"
-    implementation "androidx.annotation:annotation:1.3.0"
+    implementation "androidx.recyclerview:recyclerview:$androidxRecyclerViewVersion"
+    implementation "androidx.annotation:annotation:$androidxAnnotation"
 
     // Add for NavController support
     api "com.mikepenz:materialdrawer-nav:$materialDrawerVersion"
@@ -55,12 +55,9 @@ dependencies {
     // Need this: maven { url "https://dl.bintray.com/mikepenz/maven" }
     api "com.mikepenz:materialdrawer-iconics:$materialDrawerVersion"
 
-    //api "com.miguelcatalan:materialsearchview:$materialSearchVersion"
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$glideVersion"
 
-    implementation "com.github.bumptech.glide:glide:4.12.0"
-    kapt "com.github.bumptech.glide:compiler:4.12.0"
-
-    //implementation "androidmads.library.qrgenearator:QRGenearator:$qrGenerator"
     implementation "me.dm7.barcodescanner:zxing:$zxing"
 }
 

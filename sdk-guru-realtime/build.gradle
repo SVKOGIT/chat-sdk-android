@@ -39,7 +39,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api project(':sdk-guru-common')
-    api "com.google.firebase:firebase-database:20.0.2"
+    api "com.google.firebase:firebase-database:$firebaseDatabaseVersion"
 }
 
 ext {

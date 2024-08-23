@@ -175,7 +175,7 @@ public class ThreadMetaValueDao extends AbstractDao<ThreadMetaValue, Long> {
     @Override
     public ThreadMetaValue readEntity(Cursor cursor, int offset) {
         ThreadMetaValue entity = new ThreadMetaValue( //
-            cursor.isNull(offset) ? null : cursor.getLong(offset), // id
+                cursor.isNull(offset) ? null : cursor.getLong(offset), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // key
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // stringValue
             cursor.isNull(offset + 3) ? null : cursor.getShort(offset + 3) != 0, // booleanValue

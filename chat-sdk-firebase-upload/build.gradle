@@ -40,7 +40,7 @@ dependencies {
     implementation project(':chat-sdk-core')
 
     implementation project(':chat-sdk-firebase-adapter')
-    implementation "com.google.firebase:firebase-storage:20.0.0"
+    implementation "com.google.firebase:firebase-storage:$firebaseStorageVersion"
 }
 
 ext {

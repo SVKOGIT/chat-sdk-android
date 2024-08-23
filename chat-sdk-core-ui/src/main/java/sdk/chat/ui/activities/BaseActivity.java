@@ -293,7 +293,7 @@ public abstract class BaseActivity extends AppCompatActivity implements Consumer
     }
 
     public void showKeyboard() {
-        if (!KeyboardVisibilityEvent.isKeyboardVisible(this)) {
+        if (!KeyboardVisibilityEvent.INSTANCE.isKeyboardVisible(this)) {
             BaseActivity.showKeyboard(this);
         }
     }

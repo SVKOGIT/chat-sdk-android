@@ -21,6 +21,26 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
 
     public static final String TABLENAME = "THREAD";
 
+    private DaoSession daoSession;
+
+    public ThreadDao(DaoConfig config) {
+        super(config);
+    }
+
+
+    public ThreadDao(DaoConfig config, DaoSession daoSession) {
+        super(config, daoSession);
+        this.daoSession = daoSession;
+    }
+
+    /**
+     * Drops the underlying database table.
+     */
+    public static void dropTable(Database db, boolean ifExists) {
+        String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\"THREAD\"";
+        db.execSQL(sql);
+    }
+
     /** Creates the underlying database table. */
     public static void createTable(Database db, boolean ifNotExists) {
         String constraint = ifNotExists? "IF NOT EXISTS ": "";
@@ -35,18 +55,6 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
                 "\"DELETED\" INTEGER," + // 7: deleted
                 "\"DRAFT\" TEXT," + // 8: draft
                 "\"CAN_DELETE_MESSAGES_FROM\" INTEGER);"); // 9: canDeleteMessagesFrom
-    }
-
-    private DaoSession daoSession;
-
-
-    public ThreadDao(DaoConfig config) {
-        super(config);
-    }
-    
-    public ThreadDao(DaoConfig config, DaoSession daoSession) {
-        super(config, daoSession);
-        this.daoSession = daoSession;
     }
 
     @Override
@@ -102,12 +110,6 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
         if (canDeleteMessagesFrom != null) {
             stmt.bindLong(10, canDeleteMessagesFrom.getTime());
         }
-    }
-
-    /** Drops the underlying database table. */
-    public static void dropTable(Database db, boolean ifExists) {
-        String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\"THREAD\"";
-        db.execSQL(sql);
     }
 
     @Override
@@ -166,6 +168,17 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
     }
 
     @Override
+    protected final void attachEntity(Thread entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
+    }
+
+    @Override
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset) ? null : cursor.getLong(offset);
+    }
+
+    @Override
     public Thread readEntity(Cursor cursor, int offset) {
         Thread entity = new Thread( //
                 cursor.isNull(offset) ? null : cursor.getLong(offset), // identifier
@@ -183,17 +196,6 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
     }
 
     @Override
-    protected final void attachEntity(Thread entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
-    }
-
-    @Override
-    public Long readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset) ? null : cursor.getLong(offset);
-    }    
-
-    @Override
     public void readEntity(Cursor cursor, Thread entity, int offset) {
         entity.setIdentifier(cursor.isNull(offset) ? null : cursor.getLong(offset));
         entity.setEntityID(cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1));
@@ -207,26 +209,6 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
         entity.setCanDeleteMessagesFrom(cursor.isNull(offset + 9) ? null : new java.util.Date(cursor.getLong(offset + 9)));
      }
      
-    @Override
-    protected final Long updateKeyAfterInsert(Thread entity, long rowId) {
-        entity.setIdentifier(rowId);
-        return rowId;
-    }
-    
-    @Override
-    public Long getKey(Thread entity) {
-        if(entity != null) {
-            return entity.getIdentifier();
-        } else {
-            return null;
-        }
-    }
-    
-    @Override
-    public boolean hasKey(Thread entity) {
-        return entity.getIdentifier() != null;
-    }
-
     /**
      * Properties of entity Thread.<br/>
      * Can be used for QueryBuilder and for referencing column names.
@@ -242,6 +224,26 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
         public final static Property Deleted = new Property(7, Boolean.class, "deleted", false, "DELETED");
         public final static Property Draft = new Property(8, String.class, "draft", false, "DRAFT");
         public final static Property CanDeleteMessagesFrom = new Property(9, java.util.Date.class, "canDeleteMessagesFrom", false, "CAN_DELETE_MESSAGES_FROM");
+    }
+    
+    @Override
+    protected final Long updateKeyAfterInsert(Thread entity, long rowId) {
+        entity.setIdentifier(rowId);
+        return rowId;
+    }
+    
+    @Override
+    public Long getKey(Thread entity) {
+        if(entity != null) {
+            return entity.getIdentifier();
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean hasKey(Thread entity) {
+        return entity.getIdentifier() != null;
     }
 
     @Override

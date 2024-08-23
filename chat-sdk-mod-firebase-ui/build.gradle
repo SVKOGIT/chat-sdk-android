@@ -42,7 +42,7 @@ dependencies {
     implementation project(':chat-sdk-core-ui')
     implementation project(':chat-sdk-firebase-adapter')
 
-    implementation "com.firebaseui:firebase-ui-auth:7.1.1"
+    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiVersion"
 }
 
 ext {

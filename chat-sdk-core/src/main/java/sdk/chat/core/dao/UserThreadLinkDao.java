@@ -115,7 +115,7 @@ public class UserThreadLinkDao extends AbstractDao<UserThreadLink, Long> {
     @Override
     public UserThreadLink readEntity(Cursor cursor, int offset) {
         UserThreadLink entity = new UserThreadLink( //
-            cursor.isNull(offset) ? null : cursor.getLong(offset), // id
+                cursor.isNull(offset) ? null : cursor.getLong(offset), // id
             cursor.isNull(offset + 1) ? null : cursor.getLong(offset + 1), // userId
             cursor.isNull(offset + 2) ? null : cursor.getLong(offset + 2) // threadId
         );

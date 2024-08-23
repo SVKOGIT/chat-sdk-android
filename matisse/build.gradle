@@ -38,13 +38,13 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "androidx.appcompat:appcompat:1.1.0"
-    implementation "androidx.annotation:annotation:1.1.0"
-    implementation "androidx.recyclerview:recyclerview:1.0.0"
-    implementation 'it.sephiroth.android.library.imagezoom:library:1.0.4'
+    implementation "androidx.appcompat:appcompat:$androidxAppcompatVersion"
+    implementation "androidx.annotation:annotation:$androidxAnnotation"
+    implementation "androidx.recyclerview:recyclerview:$androidxRecyclerViewVersion"
+    implementation "it.sephiroth.android.library.imagezoom:library:$imagezoomVersion"
 
-    compileOnly 'com.github.bumptech.glide:glide:4.9.0'
-    compileOnly 'com.squareup.picasso:picasso:2.5.2'
+    compileOnly "com.github.bumptech.glide:glide:$glideVersion"
+    compileOnly "com.squareup.picasso:picasso:$picassoVersion"
 }
 //
 //// jcenter configuration for novoda's bintray-release

@@ -199,7 +199,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
     @Override
     public Message readEntity(Cursor cursor, int offset) {
         Message entity = new Message( //
-            cursor.isNull(offset) ? null : cursor.getLong(offset), // id
+                cursor.isNull(offset) ? null : cursor.getLong(offset), // id
             cursor.isNull(offset + 1) ? null : cursor.getString(offset + 1), // entityID
             cursor.isNull(offset + 2) ? null : new java.util.Date(cursor.getLong(offset + 2)), // date
             cursor.isNull(offset + 3) ? null : cursor.getInt(offset + 3), // type
