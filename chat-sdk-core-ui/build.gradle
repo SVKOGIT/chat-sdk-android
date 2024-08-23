@@ -3,6 +3,7 @@ plugins {
     id 'maven-publish'
     id 'com.jakewharton.butterknife'
     id 'kotlin-android'
+    id "com.vanniktech.maven.publish"
 }
 
 android {

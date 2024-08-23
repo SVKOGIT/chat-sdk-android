@@ -18,6 +18,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.vanniktech.maven.publish" version "0.29.0" apply false
+}
+
 ext {
     androidxAppcompatVersion = "1.7.0"
     androidxConstraintLayoutVersion = "2.1.4"
