@@ -8,8 +8,8 @@ package smartadapter.viewevent.listener
 import android.graphics.Color
 import android.widget.CompoundButton
 import androidx.annotation.IdRes
-import io.github.manneohlund.smartrecycleradapter.R
 import smartadapter.Position
+import smartadapter.R
 import smartadapter.SmartRecyclerAdapter
 import smartadapter.SmartViewHolderType
 import smartadapter.ViewId

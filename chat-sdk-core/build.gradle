@@ -27,8 +27,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     lintOptions {
@@ -42,6 +46,10 @@ greendao {
     schemaVersion 19
     targetGenDir "src/main/java"
     daoPackage "sdk.chat.core.dao"
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    dependsOn(':chat-sdk-core:greendao')
 }
 
 dependencies {

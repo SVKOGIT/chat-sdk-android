@@ -1,11 +1,11 @@
 package smartadapter.internal.utils
 
+import smartadapter.R
+
 /*
  * Created by Manne Öhlund on 2019-06-11.
  * Copyright (c) All rights reserved.
  */
-
-import io.github.manneohlund.smartrecycleradapter.R
 
 /**
  * Checks if auto view events are of the predefined types provided by the SmartRecyclerAdapter library.

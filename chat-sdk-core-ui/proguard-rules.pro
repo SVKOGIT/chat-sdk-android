@@ -84,3 +84,15 @@
  -keep class **.R$* {
      <fields>;
  }
+
+# Please add these rules to your existing keep rules in order to suppress warnings.
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn smartadapter.SmartAdapterBuilder
+-dontwarn smartadapter.SmartRecyclerAdapter$Companion
+-dontwarn smartadapter.SmartRecyclerAdapter
+-dontwarn smartadapter.extension.SmartExtensionIdentifier
+-dontwarn smartadapter.viewevent.listener.OnClickEventListener
+-dontwarn smartadapter.viewevent.listener.OnLongClickEventListener
+-dontwarn smartadapter.viewevent.model.ViewEvent$OnClick
+-dontwarn smartadapter.viewevent.model.ViewEvent$OnLongClick
+-dontwarn smartadapter.viewholder.SmartViewHolder

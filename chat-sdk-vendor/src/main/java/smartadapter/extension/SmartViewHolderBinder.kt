@@ -2,7 +2,7 @@ package smartadapter.extension
 
 import android.view.View
 import androidx.annotation.IdRes
-import io.github.manneohlund.smartrecycleradapter.R
+import smartadapter.R
 import smartadapter.SmartViewHolderType
 import smartadapter.ViewId
 import smartadapter.viewholder.SmartViewHolder

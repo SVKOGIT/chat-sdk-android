@@ -1,7 +1,7 @@
 package smartadapter.viewevent.listener
 
 import androidx.annotation.IdRes
-import io.github.manneohlund.smartrecycleradapter.R
+import smartadapter.R
 import smartadapter.SmartRecyclerAdapter
 import smartadapter.SmartViewHolderType
 import smartadapter.ViewId
