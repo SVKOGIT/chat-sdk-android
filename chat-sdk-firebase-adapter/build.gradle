@@ -41,7 +41,7 @@ dependencies {
     api project(':chat-sdk-core')
     api project(':sdk-guru-realtime')
 
-    api "com.google.firebase:firebase-auth:21.0.1"
+    api "com.google.firebase:firebase-auth:23.0.0"
 
 }
 
