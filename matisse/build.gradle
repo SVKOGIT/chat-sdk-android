@@ -18,8 +18,8 @@ apply plugin: 'checkstyle'
 apply plugin: 'maven-publish'
 
 android {
-
-    compileSdkVersion Integer.parseInt(project.ANDROID_COMPILE_SDK_VERSION)
+    namespace "com.zhihu.matisse"
+    compileSdk Integer.parseInt(project.ANDROID_COMPILE_SDK_VERSION)
 
     defaultConfig {
         minSdkVersion Integer.parseInt(project.MIN_SDK)
@@ -27,8 +27,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
     lintOptions {
         abortOnError false

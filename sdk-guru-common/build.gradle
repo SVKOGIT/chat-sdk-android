@@ -4,7 +4,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion Integer.parseInt(project.ANDROID_COMPILE_SDK_VERSION)
+    namespace "sdk.guru.common"
+    compileSdk Integer.parseInt(project.ANDROID_COMPILE_SDK_VERSION)
 
     defaultConfig {
         minSdkVersion Integer.parseInt(project.MIN_SDK)
@@ -23,8 +24,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     lintOptions {

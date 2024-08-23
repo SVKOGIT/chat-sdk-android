@@ -7,13 +7,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.3'
-        classpath "com.google.gms:google-services:4.3.10"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.31"
-        classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.1'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.8.0'
-        classpath 'com.google.firebase:perf-plugin:1.4.0'
-        classpath "org.greenrobot:greendao-gradle-plugin:3.3.0"
+        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath "com.google.gms:google-services:4.4.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.20"
+        classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.2'
+        classpath 'com.google.firebase:perf-plugin:1.4.2'
+        classpath "org.greenrobot:greendao-gradle-plugin:3.3.1"
         classpath 'com.jakewharton.hugo:hugo-plugin:1.2.1'
     }
 }
@@ -42,7 +42,7 @@ ext {
     firebasePerformanceVersion = "19.1.1"
     firebaseCrashlyticsVersion = "17.3.1"
     firebaseAnalyticsVersion = "18.0.0"
-    greenDaoVersion = "3.3.0"
+    greenDaoVersion = "3.3.1"
     frescoVersion = "1.13.0"
     rxJavaVersion = "2.2.17"
     rxAndroidVersion = "2.1.1"
@@ -89,7 +89,7 @@ ext {
 //    smackVersion = "4.4.0"
     activity_ktx_version = "1.2.0"
 
-    kotlin_version = "1.5.30"
+    kotlin_version = "2.0.20"
 
 }
 
