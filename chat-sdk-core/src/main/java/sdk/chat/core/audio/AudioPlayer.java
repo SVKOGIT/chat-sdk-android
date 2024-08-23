@@ -5,12 +5,13 @@ import static com.google.android.exoplayer2.Player.STATE_READY;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.PlaybackException;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.jakewharton.rxrelay2.PublishRelay;
 
 import org.pmw.tinylog.Logger;
@@ -37,10 +38,11 @@ public class AudioPlayer {
 
     protected String mediaSource = null;
 
-    public AudioPlayer(String source, Player.EventListener listener) {
+    public AudioPlayer(String source, AudioPlayerListener listener) {
         setSource(source);
 
-        player.addListener(new Player.EventListener() {
+
+        player.addListener(new Player.Listener() {
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 Logger.debug("Playback state: " + playbackState);
@@ -49,8 +51,19 @@ public class AudioPlayer {
                 }
                 listener.onPlayerStateChanged(playWhenReady, playbackState);
             }
-        });
 
+            public void onPlayerError(PlaybackException error) {
+                Logger.debug("Playback error: " + error);
+            }
+        });
+    }
+
+    public static String toSeconds(long millis) {
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        long minuteSeconds = TimeUnit.MINUTES.toSeconds(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+
+        return String.format(CurrentLocale.get(), "%d:%02d", minutes, seconds - minuteSeconds);
     }
 
     public void play() {
@@ -72,13 +85,15 @@ public class AudioPlayer {
 
             Context context = ChatSDK.ctx();
 
-            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
-                    Util.getUserAgent(context, "ChatSDK"));
+            DefaultDataSource.Factory dataSourceFactory = new DefaultDataSource.Factory(context);
+
+//            DefaultDataSourceFactory dataSourceFactory = new DefaultDataSourceFactory(context,
+//                    Util.getUserAgent(context, "ChatSDK"));
 
             // This is the MediaSource representing the media to be played.
             MediaSource audioSource =
                     new ProgressiveMediaSource.Factory(dataSourceFactory)
-                            .createMediaSource(Uri.parse(url));
+                            .createMediaSource(MediaItem.fromUri(Uri.parse(url)));
 
             // Prepare the player with the source.
             player.prepare(audioSource, true, true);
@@ -87,15 +102,16 @@ public class AudioPlayer {
     }
 
     public void stop() {
-        if (isPlaying()) {
-            pause();
-        }
+//        if (isPlaying()) {
+//            pause();
+//        }
+        pause();
         if (player.getCurrentPosition() > 0.5) {
             seekTo(0);
         }
     }
 
-    public void pause () {
+    public void pause() {
         player.setPlayWhenReady(false);
         if (playingDisposable != null) {
             playingDisposable.dispose();
@@ -121,12 +137,12 @@ public class AudioPlayer {
         return toSeconds(player.getCurrentPosition());
     }
 
-    public static String toSeconds (long millis) {
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
-        long minuteSeconds = TimeUnit.MINUTES.toSeconds(minutes);
-        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+    public long getCurrentPosition() {
+        return player.getCurrentPosition();
+    }
 
-        return String.format(CurrentLocale.get(), "%d:%02d", minutes, seconds - minuteSeconds);
+    public interface AudioPlayerListener {
+        void onPlayerStateChanged(boolean playWhenReady, int playbackState);
     }
 
     public void setPosition (final int position) {
