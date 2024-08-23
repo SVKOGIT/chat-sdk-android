@@ -21,24 +21,24 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
 
     public static final String TABLENAME = "THREAD";
 
-    private DaoSession daoSession;
-
-    public ThreadDao(DaoConfig config) {
-        super(config);
-    }
-
-
-    public ThreadDao(DaoConfig config, DaoSession daoSession) {
-        super(config, daoSession);
-        this.daoSession = daoSession;
-    }
-
     /**
      * Drops the underlying database table.
      */
     public static void dropTable(Database db, boolean ifExists) {
         String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\"THREAD\"";
         db.execSQL(sql);
+    }
+
+    private DaoSession daoSession;
+
+
+    public ThreadDao(DaoConfig config) {
+        super(config);
+    }
+
+    public ThreadDao(DaoConfig config, DaoSession daoSession) {
+        super(config, daoSession);
+        this.daoSession = daoSession;
     }
 
     /** Creates the underlying database table. */
@@ -168,14 +168,14 @@ public class ThreadDao extends AbstractDao<Thread, Long> {
     }
 
     @Override
-    protected final void attachEntity(Thread entity) {
-        super.attachEntity(entity);
-        entity.__setDaoSession(daoSession);
+    public Long readKey(Cursor cursor, int offset) {
+        return cursor.isNull(offset) ? null : cursor.getLong(offset);
     }
 
     @Override
-    public Long readKey(Cursor cursor, int offset) {
-        return cursor.isNull(offset) ? null : cursor.getLong(offset);
+    protected final void attachEntity(Thread entity) {
+        super.attachEntity(entity);
+        entity.__setDaoSession(daoSession);
     }
 
     @Override
