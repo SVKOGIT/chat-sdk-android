@@ -40,7 +40,9 @@ import sdk.chat.core.utils.StringChecker;
 @Entity
 public class Thread extends AbstractEntity {
 
-    @Id private Long id;
+    @org.greenrobot.greendao.annotation.Property(nameInDb = "id")
+    @Id
+    private Long identifier;
     private String entityID;
     private String userAccountID;
 
@@ -81,14 +83,14 @@ public class Thread extends AbstractEntity {
     public Thread() {
     }
 
-    public Thread(Long id) {
-        this.id = id;
+    public Thread(Long identifier) {
+        this.identifier = identifier;
     }
 
-    @Generated(hash = 1731842954)
-    public Thread(Long id, String entityID, String userAccountID, Date creationDate, Integer type, Long creatorId, Date loadMessagesFrom, Boolean deleted, String draft,
+    @Generated(hash = 611718196)
+    public Thread(Long identifier, String entityID, String userAccountID, Date creationDate, Integer type, Long creatorId, Date loadMessagesFrom, Boolean deleted, String draft,
             Date canDeleteMessagesFrom) {
-        this.id = id;
+        this.identifier = identifier;
         this.entityID = entityID;
         this.userAccountID = userAccountID;
         this.creationDate = creationDate;
@@ -106,7 +108,7 @@ public class Thread extends AbstractEntity {
 
     public List<User> getUsers() {
 
-        List<UserThreadLink> links = DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.ThreadId, getId());
+        List<UserThreadLink> links = DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.ThreadId, getIdentifier());
         if (links == null) {
             return Collections.emptyList();
         }
@@ -146,7 +148,7 @@ public class Thread extends AbstractEntity {
     }
 
     public List<UserThreadLink> getLinks() {
-        return DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.ThreadId, getId());
+        return DaoCore.fetchEntitiesWithProperty(UserThreadLink.class, UserThreadLinkDao.Properties.ThreadId, getIdentifier());
     }
 
     public boolean containsUser (User user) {
@@ -255,7 +257,7 @@ public class Thread extends AbstractEntity {
     @Keep
     public List<Message> getMessagesWithOrder(int order, int limit) {
         QueryBuilder<Message> qb = daoSession.queryBuilder(Message.class);
-        qb.where(MessageDao.Properties.ThreadId.eq(getId()));
+        qb.where(MessageDao.Properties.ThreadId.eq(getIdentifier()));
 
         if(order == DaoCore.ORDER_ASC) {
             qb.orderAsc(MessageDao.Properties.Date);
@@ -283,7 +285,7 @@ public class Thread extends AbstractEntity {
     }
 
     public void addMessage(Message message, boolean notify) {
-        message.setThreadId(this.getId());
+        message.setThreadId(this.getIdentifier());
         List<Message> messages = getMessages();
         if (!messages.contains(message)) {
             if (!messages.isEmpty()) {
@@ -328,7 +330,7 @@ public class Thread extends AbstractEntity {
         if (metaValue == null || metaValue.getValue() == null || !metaValue.getValue().equals(value)) {
             if (metaValue == null) {
                 metaValue = ChatSDK.db().createEntity(ThreadMetaValue.class);
-                metaValue.setThreadId(this.getId());
+                metaValue.setThreadId(this.getIdentifier());
                 getMetaValues().add(metaValue);
             }
 
@@ -457,13 +459,13 @@ public class Thread extends AbstractEntity {
 
         UserThreadLink data =
                 DaoCore.fetchEntityWithProperties(UserThreadLink.class,
-                        new Property[]{UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, getId(), user.getId());
+                        new Property[]{UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, getIdentifier(), user.getId());
 
         return data != null;
     }
 
     public long getUnreadMessagesCount() {
-        return ChatSDK.db().fetchUnreadMessagesCountForThread(getId());
+        return ChatSDK.db().fetchUnreadMessagesCountForThread(getIdentifier());
     }
 
     public boolean isLastMessageWasRead() {
@@ -480,18 +482,18 @@ public class Thread extends AbstractEntity {
     }
 
     public void markRead() {
-        List<Message> unreadMessages = ChatSDK.db().fetchUnreadMessagesForThread(getId());
+        List<Message> unreadMessages = ChatSDK.db().fetchUnreadMessagesForThread(getIdentifier());
         for(Message m : unreadMessages) {
             m.markRead();
         }
     }
 
-    public Long getId() {
-        return this.id;
+    public Long getIdentifier() {
+        return this.identifier;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setIdentifier(Long identifier) {
+        this.identifier = identifier;
     }
 
     public String getEntityID() {
@@ -641,7 +643,7 @@ public class Thread extends AbstractEntity {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 846992604)
+    @Generated(hash = 1270992173)
     public List<UserThreadLink> getUserThreadLinks() {
         if (userThreadLinks == null) {
             final DaoSession daoSession = this.daoSession;
@@ -649,7 +651,7 @@ public class Thread extends AbstractEntity {
                 throw new DaoException("Entity is detached from DAO context");
             }
             UserThreadLinkDao targetDao = daoSession.getUserThreadLinkDao();
-            List<UserThreadLink> userThreadLinksNew = targetDao._queryThread_UserThreadLinks(id);
+            List<UserThreadLink> userThreadLinksNew = targetDao._queryThread_UserThreadLinks(identifier);
             synchronized (this) {
                 if (userThreadLinks == null) {
                     userThreadLinks = userThreadLinksNew;
@@ -669,7 +671,7 @@ public class Thread extends AbstractEntity {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 581641122)
+    @Generated(hash = 1406985998)
     public List<Message> getMessages() {
         if (messages == null) {
             final DaoSession daoSession = this.daoSession;
@@ -677,7 +679,7 @@ public class Thread extends AbstractEntity {
                 throw new DaoException("Entity is detached from DAO context");
             }
             MessageDao targetDao = daoSession.getMessageDao();
-            List<Message> messagesNew = targetDao._queryThread_Messages(id);
+            List<Message> messagesNew = targetDao._queryThread_Messages(identifier);
             synchronized (this) {
                 if (messages == null) {
                     messages = messagesNew;
@@ -756,7 +758,7 @@ public class Thread extends AbstractEntity {
      * To-many relationship, resolved on first access (and after reset).
      * Changes to to-many relations are not persisted, make changes to the target entity.
      */
-    @Generated(hash = 132417041)
+    @Generated(hash = 203850155)
     public List<ThreadMetaValue> getMetaValues() {
         if (metaValues == null) {
             final DaoSession daoSession = this.daoSession;
@@ -764,7 +766,7 @@ public class Thread extends AbstractEntity {
                 throw new DaoException("Entity is detached from DAO context");
             }
             ThreadMetaValueDao targetDao = daoSession.getThreadMetaValueDao();
-            List<ThreadMetaValue> metaValuesNew = targetDao._queryThread_MetaValues(id);
+            List<ThreadMetaValue> metaValuesNew = targetDao._queryThread_MetaValues(identifier);
             synchronized (this) {
                 if (metaValues == null) {
                     metaValues = metaValuesNew;
@@ -786,7 +788,7 @@ public class Thread extends AbstractEntity {
 
     @Nullable
     public UserThreadLink getUserThreadLink(Long userId) {
-        return DaoCore.fetchEntityWithProperties(UserThreadLink.class, new Property[] {UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, getId(), userId);
+        return DaoCore.fetchEntityWithProperties(UserThreadLink.class, new Property[]{UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, getIdentifier(), userId);
     }
 
     public void setPermission(String userEntityID, String permission) {
@@ -906,9 +908,7 @@ public class Thread extends AbstractEntity {
                 return value.getBooleanValue();
             }
             // Deprecated. To cover old case where we set this to a string
-            if(value.getStringValue() != null) {
-                return true;
-            }
+            return value.getStringValue() != null;
         }
         return false;
     }

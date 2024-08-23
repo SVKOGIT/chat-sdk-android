@@ -116,7 +116,7 @@ public class DaoCore {
         else return null;
     }
 
-    public static <T> T fetchEntityWithProperties(Class<T> c, Property properties[], Object... values) {
+    public static <T> T fetchEntityWithProperties(Class<T> c, Property[] properties, Object... values) {
         List<T> list = fetchEntitiesWithPropertiesAndOrder(c, null, -1, properties, values);
 
         if (list == null || list.size() == 0)
@@ -145,7 +145,7 @@ public class DaoCore {
     /**
      * Fetch a list of entities for a given properties and values.
      */
-    public static <T> List<T> fetchEntitiesWithProperties(Class<T> c, Property properties[], Object... values) {
+    public static <T> List<T> fetchEntitiesWithProperties(Class<T> c, Property[] properties, Object... values) {
         return fetchEntitiesWithPropertiesAndOrder(c, null, -1, properties, values);
     }
 
@@ -156,7 +156,7 @@ public class DaoCore {
         return fetchEntitiesWithPropertiesAndOrder(c, whereOrder, order, new Property[]{property}, value);
     }
 
-    public static <T> List<T> fetchEntitiesWithPropertiesAndOrder(Class<T> c, Property whereOrder, int order, Property properties[], Object... values) {
+    public static <T> List<T> fetchEntitiesWithPropertiesAndOrder(Class<T> c, Property whereOrder, int order, Property[] properties, Object... values) {
 
         if (values == null || properties == null)
             throw new NullPointerException("You must have at least one value and one property");
@@ -203,7 +203,7 @@ public class DaoCore {
         daoSession.delete(entity);
         daoSession.clear();
 
-        Logger.debug("Update Entity: " + entity.toString());
+        Logger.debug("Update Entity: " + entity);
         return entity;
     }
 
@@ -212,15 +212,15 @@ public class DaoCore {
             return null;
         }
         asyncSession.update(entity);
-        Logger.debug("Update Entity: " + entity.toString());
+        Logger.debug("Update Entity: " + entity);
         return entity;
     }
 
     public static boolean connectUserAndThread(User user, Thread thread) {
-        Logger.debug("connectUserAndThread, CoreUser ID: %s, Name: %s, ThreadID: %s", +user.getId(), user.getName(), thread.getId());
+        Logger.debug("connectUserAndThread, CoreUser ID: %s, Name: %s, ThreadID: %s", +user.getId(), user.getName(), thread.getIdentifier());
         if (!thread.hasUser(user)) {
             UserThreadLink linkData = new UserThreadLink();
-            linkData.setThreadId(thread.getId());
+            linkData.setThreadId(thread.getIdentifier());
             linkData.setThread(thread);
             linkData.setUserId(user.getId());
             linkData.setUser(user);
@@ -231,8 +231,8 @@ public class DaoCore {
     }
 
     public static boolean breakUserAndThread(User user, Thread thread) {
-        Logger.debug("breakUserAndThread, CoreUser ID: %s, Name: %s, ThreadID: %s", +user.getId(), user.getName(), thread.getId());
-        UserThreadLink linkData = fetchEntityWithProperties(UserThreadLink.class, new Property[]{UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, thread.getId(), user.getId());
+        Logger.debug("breakUserAndThread, CoreUser ID: %s, Name: %s, ThreadID: %s", +user.getId(), user.getName(), thread.getIdentifier());
+        UserThreadLink linkData = fetchEntityWithProperties(UserThreadLink.class, new Property[]{UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId}, thread.getIdentifier(), user.getId());
         if (linkData != null) {
             deleteEntity(linkData);
             return true;

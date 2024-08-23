@@ -319,7 +319,7 @@ public class User extends AbstractEntity implements UserListItem {
     }
 
     public Boolean metaBooleanForKey(String key) {
-        return metaValueForKey(key) != null && metaValueForKey(key).getValue().toLowerCase().equals("true");
+        return metaValueForKey(key) != null && metaValueForKey(key).getValue().equalsIgnoreCase("true");
     }
 
     public void setMetaString(String key, String value) {
@@ -403,7 +403,7 @@ public class User extends AbstractEntity implements UserListItem {
         UserThreadLink data = DaoCore.fetchEntityWithProperties(
                 UserThreadLink.class,
                 new Property[] {UserThreadLinkDao.Properties.ThreadId, UserThreadLinkDao.Properties.UserId},
-                thread.getId(),
+                thread.getIdentifier(),
                 getId()
         );
 

@@ -41,17 +41,20 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return loadMoreMessagesBefore(thread, before, true);
     }
 
-    @Override
-    public Single<List<Message>> loadMoreMessagesBefore(final Thread thread, @Nullable Date before, boolean loadFromServer) {
-        return Single.defer(() -> {
-            return Single.just(ChatSDK.db().fetchMessagesForThreadWithID(thread.getId(), null, before, ChatSDK.config().messagesToLoadPerBatch + 1));
-        }).subscribeOn(RX.db());
+    private static boolean containsSimilarThread(List<Thread> list, Thread thread) {
+        for (Thread savedThread : list) {
+            if (savedThread == thread || savedThread.equalsEntity(thread) || savedThread.getIdentifier().equals(thread.getIdentifier())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
-    public Single<List<Message>> loadMoreMessagesAfter(Thread thread, @Nullable Date after, boolean loadFromServer) {
+    public Single<List<Message>> loadMoreMessagesBefore(final Thread thread, @Nullable Date before, boolean loadFromServer) {
         return Single.defer(() -> {
-            return Single.just(ChatSDK.db().fetchMessagesForThreadWithID(thread.getId(), after, null, 0));
+            return Single.just(ChatSDK.db().fetchMessagesForThreadWithID(thread.getIdentifier(), null, before, ChatSDK.config().messagesToLoadPerBatch + 1));
         }).subscribeOn(RX.db());
     }
 
@@ -113,14 +116,11 @@ public abstract class AbstractThreadHandler implements ThreadHandler {
         return newMessage(type.ordinal(), thread);
     }
 
-    private static boolean containsSimilarThread(List<Thread> list, Thread thread) {
-        for (Thread savedThread : list) {
-            if (savedThread == thread || savedThread.equalsEntity(thread) || savedThread.getId().equals(thread.getId())) {
-                return true;
-            }
-        }
-
-        return false;
+    @Override
+    public Single<List<Message>> loadMoreMessagesAfter(Thread thread, @Nullable Date after, boolean loadFromServer) {
+        return Single.defer(() -> {
+            return Single.just(ChatSDK.db().fetchMessagesForThreadWithID(thread.getIdentifier(), after, null, 0));
+        }).subscribeOn(RX.db());
     }
 
     @Override

@@ -117,11 +117,8 @@ public class Message extends AbstractEntity {
             return true;
         } else {
             ReadStatus status = readStatusForUser(ChatSDK.currentUser());
-            if (status != null && status.is(ReadStatus.read())) {
-                return true;
-            }
+            return status != null && status.is(ReadStatus.read());
         }
-        return false;
     }
 
     public Single<Boolean> isReadAsync() {
@@ -141,11 +138,7 @@ public class Message extends AbstractEntity {
             return true;
         } else {
             ReadStatus status = readStatusForUser(ChatSDK.currentUser());
-            if (status != null && status.getValue() >= ReadStatus.Delivered) {
-                return true;
-            } else {
-                return false;
-            }
+            return status != null && status.getValue() >= ReadStatus.Delivered;
         }
     }
 
@@ -520,11 +513,11 @@ public class Message extends AbstractEntity {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1938921797)
+    @Generated(hash = 372886343)
     public void setThread(Thread thread) {
         synchronized (this) {
             this.thread = thread;
-            threadId = thread == null ? null : thread.getId();
+            threadId = thread == null ? null : thread.getIdentifier();
             thread__resolvedKey = threadId;
         }
     }
@@ -689,10 +682,7 @@ public class Message extends AbstractEntity {
 
     public boolean isReply() {
         String reply = getReply();
-        if (reply != null && !reply.isEmpty()) {
-            return true;
-        }
-        return false;
+        return reply != null && !reply.isEmpty();
     }
 
     public MessageType getReplyType() {

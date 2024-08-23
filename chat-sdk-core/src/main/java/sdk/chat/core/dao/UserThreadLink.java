@@ -122,11 +122,11 @@ public class UserThreadLink {
     }
 
     /** called by internal mechanisms, do not call yourself. */
-    @Generated(hash = 1938921797)
+    @Generated(hash = 372886343)
     public void setThread(Thread thread) {
         synchronized (this) {
             this.thread = thread;
-            threadId = thread == null ? null : thread.getId();
+            threadId = thread == null ? null : thread.getIdentifier();
             thread__resolvedKey = threadId;
         }
     }

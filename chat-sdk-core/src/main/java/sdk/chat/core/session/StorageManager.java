@@ -105,7 +105,7 @@ public class StorageManager {
         Logger.debug(java.lang.Thread.currentThread().getName());
 
         if (entityCacheEnabled && entityCache.containsKey(c.toString() + entityId)) {
-            return (T) entityCache.get(c.toString() + entityId);
+            return (T) entityCache.get(c + entityId);
         }
 
         T entity = DaoCore.fetchEntityWithEntityID(c, entityId);
@@ -153,7 +153,7 @@ public class StorageManager {
 
     public synchronized <T extends CoreEntity> T fetchEntityWithEntityID(String entityID, Class<T> c) {
         if (entityCacheEnabled && entityCache.containsKey(c.toString() + entityID)) {
-            return (T) entityCache.get(c.toString() + entityID);
+            return (T) entityCache.get(c + entityID);
         }
         if (c == Thread.class) {
             return (T) fetchThreadWithEntityID(entityID);
@@ -278,7 +278,7 @@ public class StorageManager {
 //    }
 
     public Thread fetchThreadWithID(long threadID) {
-        return fetchEntityWithProperty(Thread.class, ThreadDao.Properties.Id, threadID);
+        return fetchEntityWithProperty(Thread.class, ThreadDao.Properties.Identifier, threadID);
     }
 
     public Single<Thread> fetchThreadWithIDAsync(long threadID) {

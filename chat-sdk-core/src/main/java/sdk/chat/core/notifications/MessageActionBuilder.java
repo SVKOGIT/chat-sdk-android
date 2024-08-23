@@ -119,14 +119,14 @@ public class MessageActionBuilder {
 
     public void addReply(NotificationCompat.Builder builder, Context context, Thread thread) {
         if (ChatSDK.config().replyFromNotificationEnabled) {
-            NotificationCompat.Action replyAction = createReplyAction(context, thread.getEntityID(), getReplyId(thread.getId()));
+            NotificationCompat.Action replyAction = createReplyAction(context, thread.getEntityID(), getReplyId(thread.getIdentifier()));
             builder.addAction(replyAction);
         }
     }
 
     public void addMarkRead(NotificationCompat.Builder builder, Context context, Thread thread) {
         if (ChatSDK.config().markAsReadFromNotificationEnabled) {
-            NotificationCompat.Action markAsReadAction = createMarkAsReadAction(context, thread.getEntityID(), getMarkReadId(thread.getId()));
+            NotificationCompat.Action markAsReadAction = createMarkAsReadAction(context, thread.getEntityID(), getMarkReadId(thread.getIdentifier()));
             builder.addAction(markAsReadAction);
         }
     }
